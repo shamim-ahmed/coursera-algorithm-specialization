@@ -1,10 +1,14 @@
 import java.util.Scanner;
 
-class APlusB {
-  public static void main(String[] args) {
-    Scanner s = new Scanner(System.in);
-    int a = s.nextInt();
-    int b = s.nextInt();
-    System.out.println(a + b);
+public class APlusB {
+  public static void main(String... args) {
+    Scanner scanner = new Scanner(System.in);
+
+    int m = scanner.nextInt();
+    int n = scanner.nextInt();
+    int result = m + n;
+
+    System.out.println(result);
+    scanner.close();
   }
 }
