@@ -5,13 +5,22 @@ public class Fibonacci {
     if (n <= 1)
       return n;
 
-    return calc_fib(n - 1) + calc_fib(n - 2);
+    long[] values = new long[n + 1];
+    values[0] = 0L;
+    values[1] = 1L;
+    
+    for (int i = 2; i <= n; i++) {
+      values[i] = values[i - 1] + values[i - 2];
+    }
+    
+    return values[n];
   }
 
   public static void main(String args[]) {
     Scanner in = new Scanner(System.in);
     int n = in.nextInt();
-
+    
     System.out.println(calc_fib(n));
+    in.close();
   }
 }
