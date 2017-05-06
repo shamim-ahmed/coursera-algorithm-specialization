@@ -2,22 +2,52 @@ import java.util.*;
 
 public class FibonacciSumLastDigit {
   private static int getLastDigitOfFibonacciSum(long n) {
-    if (n == 0L) {
-      return 0;
+    if (n <= 1L) {
+      return (int) n;
+    }
+
+    int period = findPeriodLength(10);
+    int r = (int) ((n + 2L) % period);
+    int sum = fibonacciMod(r, 10);
+
+    return (sum - 1 + 10) % 10;
+  }
+
+  private static int fibonacciMod(int n, int m) {
+    if (n <= 1) {
+      return n;
     }
 
     int x = 0;
     int y = 1;
-    int sum = 1;
 
-    for (long i = 2L; i <= n; i++) {
-      int z = (x + y) % 10;
-      sum = (sum + z) % 10;
+    for (int i = 2; i <= n; i++) {
+      int z = (x + y) % m;
       x = y;
       y = z;
     }
 
-    return sum;
+    return y;
+  }
+
+  private static int findPeriodLength(int m) {
+    int len = 0;
+    int x = 0;
+    int y = 1;
+    boolean done = false;
+
+    while (!done) {
+      int z = (x + y) % m;
+      x = y;
+      y = z;
+      len++;
+
+      if (x == 0 && y == 1) {
+        done = true;
+      }
+    }
+
+    return len;
   }
 
   public static void main(String[] args) {
