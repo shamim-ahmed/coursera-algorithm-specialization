@@ -9,6 +9,10 @@ public class FibonacciHuge {
   }
 
   private static int fibonacciMod(int n, int m) {
+    if (n <= 1) {
+      return n;
+    }
+
     int x = 0;
     int y = 1;
 
