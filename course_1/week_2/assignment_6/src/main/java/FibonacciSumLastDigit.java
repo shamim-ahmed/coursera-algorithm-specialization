@@ -8,9 +8,9 @@ public class FibonacciSumLastDigit {
 
     int period = findPeriodLength(10);
     int r = (int) ((n + 2L) % period);
-    int sum = fibonacciMod(r, 10);
+    int s = fibonacciMod(r, 10);
 
-    return (sum - 1 + 10) % 10;
+    return (s - 1 + 10) % 10;
   }
 
   private static int fibonacciMod(int n, int m) {
