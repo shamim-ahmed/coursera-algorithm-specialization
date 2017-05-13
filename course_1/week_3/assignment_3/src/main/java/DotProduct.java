@@ -6,10 +6,10 @@ public class DotProduct {
     Arrays.sort(b);
 
     final int n = a.length;
-    int result = 0;
+    long result = 0;
 
     for (int i = n - 1; i >= 0; i--) {
-      result += a[i] * b[i];
+      result += (((long) a[i]) * ((long) b[i]));
     }
 
     return result;
