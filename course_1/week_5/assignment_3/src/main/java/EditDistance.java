@@ -1,6 +1,6 @@
 import java.util.*;
 
-class EditDistance {
+public class EditDistance {
   public static int editDistance(String s, String t) {
     final int m = s.length();
     final int n = t.length();
@@ -18,39 +18,16 @@ class EditDistance {
 
     for (int i = 1; i <= m; i++) {
       for (int j = 1; j <= n; j++) {
-        int val = Integer.MAX_VALUE;
-
-        // case 1
         int a = resultTable[i][j - 1] + 1;
-
-        if (a < val) {
-          val = a;
-        }
-
-        // case 2
         int b = resultTable[i - 1][j] + 1;
 
-        if (b < val) {
-          val = b;
-        }
-
         if (firstStringChars[i] == secondStringChars[j]) {
-          // case 3
           int c = resultTable[i - 1][j - 1];
-
-          if (c < val) {
-            val = c;
-          }
+          resultTable[i][j] = findMinimum(a, b, c);
         } else {
-          // case 4
           int d = resultTable[i - 1][j - 1] + 1;
-
-          if (d < val) {
-            val = d;
-          }
+          resultTable[i][j] = findMinimum(a, b, d);
         }
-
-        resultTable[i][j] = val;
       }
     }
 
@@ -63,6 +40,18 @@ class EditDistance {
     System.arraycopy(s.toCharArray(), 0, resultArray, 1, len);
 
     return resultArray;
+  }
+
+  private static int findMinimum(int... values) {
+    int result = Integer.MAX_VALUE;
+
+    for (int v : values) {
+      if (v < result) {
+        result = v;
+      }
+    }
+
+    return result;
   }
 
   public static void main(String args[]) {
