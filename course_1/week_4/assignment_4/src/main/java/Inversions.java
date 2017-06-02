@@ -2,6 +2,7 @@ import java.util.*;
 
 public class Inversions {
   private static final int[] EMPTY_ARRAY = new int[0];
+  private static long inversionCount;
 
   private static int[] mergeSort(int[] a, int left, int right) {
     if (left > right) {
@@ -30,6 +31,7 @@ public class Inversions {
         i++;
       } else {
         result[k] = b[j];
+        inversionCount += (a.length- i);
         j++;
       }
 
@@ -60,8 +62,9 @@ public class Inversions {
       a[i] = scanner.nextInt();
     }
 
-    int[] result = mergeSort(a, 0, a.length - 1);
-    System.out.println(Arrays.toString(result));
+    inversionCount = 0L;
+    mergeSort(a, 0, a.length - 1);
+    System.out.println(inversionCount);
     scanner.close();
   }
 }
