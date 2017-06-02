@@ -1,36 +1,51 @@
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class PointsAndSegments {
+  private enum Category {SEGMENT_START, POINT, SEGMENT_END};
 
   private static int[] fastCountSegments(int[] startArray, int[] endArray, int[] pointArray) {
-    final int numberOfSegments = startArray.length;
     final int numberOfPoints = pointArray.length;
-    Segment[] segmentArray = new Segment[numberOfSegments];
+    int[] countArray = new int[numberOfPoints];
+    Position[] positionArray = new Position[startArray.length + endArray.length + pointArray.length];
+    HashMap<Position, Integer> indexMap = new HashMap<>();
     
-    for (int i = 0; i < segmentArray.length; i++) {
-      segmentArray[i] = new Segment(startArray[i], endArray[i]);
+    int k = 0;
+    
+    for (int val : startArray) {
+      positionArray[k] = new Position(val, Category.SEGMENT_START);
+      k++;
     }
     
-    Arrays.sort(segmentArray);
-    int[] countArray = new int[numberOfPoints];
+    for (int val : endArray) {
+      positionArray[k] = new Position(val, Category.SEGMENT_END);
+      k++;
+    }
     
-    for (int i = 0; i < numberOfPoints; i++) {
-      int point = pointArray[i];
+    for (int i = 0; i < pointArray.length; i++) {
+      positionArray[k] = new Position(pointArray[i], Category.POINT);
+      indexMap.put(positionArray[k], i);
+      k++;
+    }
+    
+    Arrays.sort(positionArray);
+    
+    int segmentCount = 0;
+    
+    for (Position position : positionArray) {
+      Category type = position.getType();
       
-      for (int j = 0; j < numberOfSegments; j++) {
-        Segment segment = segmentArray[j];
-        
-        if (segment.getLeftEndPoint() > point) {
-          break;
-        }
-        
-        if (segment.containsPoint(point)) {
-          countArray[i]++;
-        }
+      if (type == Category.SEGMENT_START) {
+        segmentCount++;
+      } else if (type == Category.SEGMENT_END) {
+        segmentCount--;
+      } else {
+        int index = indexMap.get(position);
+        countArray[index] = segmentCount;
       }
     }
-    
+
     return countArray;
   }
 
@@ -60,56 +75,46 @@ public class PointsAndSegments {
 
     scanner.close();
   }
-
-  private static class Segment implements Comparable<Segment> {
-    private final int leftEndPoint;
-    private final int rightEndPoint;
-
-    public Segment(int leftEndPoint, int rightEndPoint) {
-      this.leftEndPoint = leftEndPoint;
-      this.rightEndPoint = rightEndPoint;
+  
+  private static class Position implements Comparable<Position> {
+    private final int value;
+    private final Category type;
+    
+    public Position(int value, Category type) {
+      this.value = value;
+      this.type = type;
     }
     
-    public int getLeftEndPoint() {
-      return leftEndPoint;
+    public int getValue() {
+      return value;
     }
 
-    public int getRightEndPoint() {
-      return rightEndPoint;
-    }
-
-    public boolean containsPoint(int point) {
-      return point >= leftEndPoint && point <= rightEndPoint;
+    public Category getType() {
+      return type;
     }
     
     @Override
-    public boolean equals(Object obj) {
-      if (!(obj instanceof Segment)) {
-       return false; 
-      }
-      
-      Segment otherSegment = (Segment) obj;
-      
-      return leftEndPoint == otherSegment.leftEndPoint && rightEndPoint == otherSegment.rightEndPoint;
-    }
-    
-    @Override
-    public int hashCode() {
-      return 17 * leftEndPoint + rightEndPoint;
-    }
-    
-    @Override
-    public int compareTo(Segment otherSegment) {
-      if (leftEndPoint < otherSegment.leftEndPoint) {
+    public int compareTo(Position otherPosition) {
+      if (value < otherPosition.value) {
         return -1;
       }
-
-      if (leftEndPoint > otherSegment.leftEndPoint) {
+      
+      if (value > otherPosition.value) {
         return 1;
       }
-
+      
+      int ordinal = type.ordinal();
+      int otherOrdinal = otherPosition.type.ordinal();
+      
+      if (ordinal < otherOrdinal) {
+        return -1;
+      }
+      
+      if (ordinal > otherOrdinal) {
+        return 1;
+      }
+      
       return 0;
     }
   }
 }
-
