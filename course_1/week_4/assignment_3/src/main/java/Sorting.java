@@ -69,9 +69,9 @@ public class Sorting {
     a[k] = t;
 
     // use partition3
-    int[] m = partition3(a, l, r);
-    randomizedQuickSort(a, l, m[0]);
-    randomizedQuickSort(a, m[1], r);
+    int[] indexArray = partition3(a, l, r);
+    randomizedQuickSort(a, l, indexArray[0]);
+    randomizedQuickSort(a, indexArray[1], r);
   }
   
   private static void swap(int[] a, int i, int j) {
