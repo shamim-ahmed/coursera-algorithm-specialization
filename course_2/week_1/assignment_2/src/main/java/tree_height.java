@@ -2,53 +2,120 @@ import java.util.*;
 import java.io.*;
 
 public class tree_height {
-  class FastScanner {
-    StringTokenizer tok = new StringTokenizer("");
-    BufferedReader in;
+  private static final int INVALID_INDEX = -1;
 
-    FastScanner() {
+  private static class FastScanner {
+    private StringTokenizer tok = new StringTokenizer("");
+    private BufferedReader in;
+
+    public FastScanner() {
       in = new BufferedReader(new InputStreamReader(System.in));
     }
 
-    String next() throws IOException {
-      while (!tok.hasMoreElements())
+    public String next() throws IOException {
+      while (!tok.hasMoreElements()) {
         tok = new StringTokenizer(in.readLine());
+      }
+      
       return tok.nextToken();
     }
 
-    int nextInt() throws IOException {
+    public int nextInt() throws IOException {
       return Integer.parseInt(next());
     }
   }
 
-  public class TreeHeight {
-    int n;
-    int parents[];
+  private static class Node {
+    private Node parent;
+    private int level;
+    private final List<Node> childNodes;
 
-    void read() throws IOException {
-      FastScanner in = new FastScanner();
-      n = in.nextInt();
-      parents = new int[n];
-      
-      for (int i = 0; i < n; i++) {
-        parents[i] = in.nextInt();
-      }
+    public Node() {
+      childNodes = new ArrayList<>();
     }
 
-    int computeHeight() {
-      // Replace this code with a faster implementation
-      int maxHeight = 0;
-      for (int vertex = 0; vertex < n; vertex++) {
-        int height = 0;
-        for (int i = vertex; i != -1; i = parents[i])
-          height++;
-        maxHeight = Math.max(maxHeight, height);
-      }
-      return maxHeight;
+    public Node getParent() {
+      return parent;
+    }
+
+    public void setParent(Node parent) {
+      this.parent = parent;
+    }
+    
+    public int getLevel() {
+      return level;
+    }
+
+    public void setLevel(int level) {
+      this.level = level;
+    }
+
+    public List<Node> getChildNodes() {
+      return childNodes;
+    }
+
+    public void addChild(Node child) {
+      childNodes.add(child);
     }
   }
 
-  static public void main(String[] args) throws IOException {
+  private static class TreeHeight {
+    private Node nodeArray[];
+    private Node root;
+
+    public void read() throws IOException {
+      FastScanner in = new FastScanner();
+      final int n = in.nextInt();
+      nodeArray = new Node[n];
+
+      for (int i = 0; i < n; i++) {
+        nodeArray[i] = new Node();
+      }
+
+      for (int i = 0; i < n; i++) {
+        int parentIndex = in.nextInt();
+        Node node = nodeArray[i];
+
+        if (parentIndex == INVALID_INDEX) {
+          node.setParent(null);
+          node.setLevel(1);
+          root = node;
+        } else {
+          Node p = nodeArray[parentIndex];
+          node.setParent(p);
+          p.addChild(node);
+        }
+      }
+    }
+
+    public int computeHeight() {
+      int treeHeight = 0;
+      Stack<Node> nodeStack = new Stack<>();
+      nodeStack.push(root);
+
+      while (!nodeStack.isEmpty()) {
+        Node node = nodeStack.pop();
+        int lvl = node.getLevel();
+        
+        if (lvl > treeHeight) {
+          treeHeight = lvl;
+        }
+
+        List<Node> childNodes = node.getChildNodes();
+        int n = childNodes.size();
+
+        for (int i = n - 1; i >= 0; i--) {
+          Node child = childNodes.get(i);
+          child.setLevel(lvl + 1);
+          nodeStack.push(child);
+        }
+      }
+
+      return treeHeight;
+    }
+  }
+
+  public static void main(String[] args) throws IOException {
     new Thread(null, new Runnable() {
       public void run() {
         try {
