@@ -5,7 +5,7 @@ import java.util.Stack;
 
 public class check_brackets {
   enum SymbolType {
-    LEFT_PARENTHESIS, RIGHT_PARENTHESIS, LEFT_CURLY_BRACE, RIGHT_CURLY_BRACE, LEFT_BRACKET, RIGHT_BRACKET
+    LEFT_PARENTHESIS, LEFT_CURLY_BRACE, LEFT_BRACKET
   }
 
   private static final String SUCCESS_STR = "Success";
@@ -81,7 +81,7 @@ public class check_brackets {
 
   private static int findMismatchIndex(Stack<Symbol> symbolStack, char c, int i) {
     int result = INVALID_INDEX;
-    
+
     if (c == ')' || c == '}' || c == ']') {
       result = i + 1;
     } else {
