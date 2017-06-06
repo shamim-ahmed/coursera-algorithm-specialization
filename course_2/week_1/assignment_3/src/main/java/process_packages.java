@@ -1,81 +1,108 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
-class Request {
-    public Request(int arrival_time, int process_time) {
-        this.arrival_time = arrival_time;
-        this.process_time = process_time;
+public class process_packages {
+
+  private static final int INVALID_TIME = -1;
+
+  public static void main(String[] args) throws IOException {
+    Scanner scanner = new Scanner(System.in);
+    int bufferSize = scanner.nextInt();
+
+    List<Request> requests = readQueries(scanner);
+    processRequests(requests, bufferSize);
+    printResult(requests);
+
+    scanner.close();
+  }
+
+  private static List<Request> readQueries(Scanner scanner) throws IOException {
+    int numberOfRequests = scanner.nextInt();
+    List<Request> requests = new ArrayList<Request>();
+
+    for (int i = 0; i < numberOfRequests; ++i) {
+      int arrivalTime = scanner.nextInt();
+      int processTime = scanner.nextInt();
+      requests.add(new Request(arrivalTime, processTime));
     }
+    
+    return requests;
+  }
 
-    public int arrival_time;
-    public int process_time;
-}
+  private static void processRequests(List<Request> requestList, int capacity) {
+    LinkedList<Request> buffer = new LinkedList<>();
 
-class Response {
-    public Response(boolean dropped, int start_time) {
-        this.dropped = dropped;
-        this.start_time = start_time;
-    }
+    for (Request currentRequest : requestList) {
+      int currentTime = currentRequest.getArrivalTime();
+      boolean done = false;
 
-    public boolean dropped;
-    public int start_time;
-}
+      while (!done && !buffer.isEmpty()) {
+        // each packet placed in the buffer will have a valid end time
+        Request oldRequest = buffer.peek();
 
-class Buffer {
-    public Buffer(int size) {
-        this.size_ = size;
-        this.finish_time_ = new ArrayList<Integer>();
-    }
-
-    public Response Process(Request request) {
-        // write your code here
-        return new Response(false, -1);
-    }
-
-    private int size_;
-    private ArrayList<Integer> finish_time_;
-}
-
-class process_packages {
-    private static ArrayList<Request> ReadQueries(Scanner scanner) throws IOException {
-        int requests_count = scanner.nextInt();
-        ArrayList<Request> requests = new ArrayList<Request>();
-        for (int i = 0; i < requests_count; ++i) {
-            int arrival_time = scanner.nextInt();
-            int process_time = scanner.nextInt();
-            requests.add(new Request(arrival_time, process_time));
+        if (oldRequest.getEndTime() > currentTime) {
+          done = true;
+        } else {
+          buffer.poll();
         }
-        return requests;
+      }
+
+      if (buffer.isEmpty()) {
+        currentRequest.setStartTime(currentTime);
+        buffer.offer(currentRequest);
+      } else if (buffer.size() == capacity) {
+        currentRequest.setStartTime(INVALID_TIME);
+      } else {
+        Request lastQueuedRequest = buffer.peekLast();
+        currentRequest.setStartTime(lastQueuedRequest.getEndTime());
+        buffer.offer(currentRequest);
+      }
+    }
+  }
+
+  private static void printResult(List<Request> requests) {
+    for (Request request : requests) {
+      System.out.println(request.getStartTime());
+    }
+  }
+
+  private static class Request {
+    private final int arrivalTime;
+    private final int processTime;
+    private int startTime;
+
+    public Request(int arrivalTime, int processTime) {
+      this.arrivalTime = arrivalTime;
+      this.processTime = processTime;
+
+      startTime = INVALID_TIME;
     }
 
-    private static ArrayList<Response> ProcessRequests(ArrayList<Request> requests, Buffer buffer) {
-        ArrayList<Response> responses = new ArrayList<Response>();
-        for (int i = 0; i < requests.size(); ++i) {
-            responses.add(buffer.Process(requests.get(i)));
-        }
-        return responses;
+    public int getArrivalTime() {
+      return arrivalTime;
     }
 
-    private static void PrintResponses(ArrayList<Response> responses) {
-        for (int i = 0; i < responses.size(); ++i) {
-            Response response = responses.get(i);
-            if (response.dropped) {
-                System.out.println(-1);
-            } else {
-                System.out.println(response.start_time);
-            }
-        }
+    public int getProcessTime() {
+      return processTime;
     }
 
-    public static void main(String[] args) throws IOException {
-        Scanner scanner = new Scanner(System.in);
-
-        int buffer_max_size = scanner.nextInt();
-        Buffer buffer = new Buffer(buffer_max_size);
-
-        ArrayList<Request> requests = ReadQueries(scanner);
-        ArrayList<Response> responses = ProcessRequests(requests, buffer);
-        PrintResponses(responses);
+    public int getStartTime() {
+      return startTime;
     }
+
+    public void setStartTime(int startTime) {
+      this.startTime = startTime;
+    }
+
+    public int getEndTime() {
+      if (startTime == INVALID_TIME) {
+        return INVALID_TIME;
+      }
+
+      return startTime + processTime;
+    }
+  }
 }
