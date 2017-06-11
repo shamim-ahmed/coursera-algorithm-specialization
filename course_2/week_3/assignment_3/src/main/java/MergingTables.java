@@ -48,7 +48,7 @@ public class MergingTables {
     
     int sumOfRowNumbers = realDestination.getNumberOfRows() + realSource.getNumberOfRows();
         
-    // merge two components here
+    // merge two tables and update number of rows
     // use rank heuristic
     int realDestinationRank = realDestination.getRank();
     int realSourceRank = realSource.getRank();
