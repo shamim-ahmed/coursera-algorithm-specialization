@@ -56,11 +56,9 @@ public class MergingTables {
     if (realDestinationRank < realSourceRank) {
       realDestination.setParent(realSource);
       realSource.setNumberOfRows(sumOfRowNumbers);
-      realDestination.setNumberOfRows(0);
     } else {
       realSource.setParent(realDestination);
       realDestination.setNumberOfRows(sumOfRowNumbers);
-      realSource.setNumberOfRows(0);
     }
     
     if (realDestinationRank == realSourceRank) {
