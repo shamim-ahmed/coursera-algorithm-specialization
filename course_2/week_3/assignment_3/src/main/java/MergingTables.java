@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
@@ -45,14 +47,14 @@ public class MergingTables {
     if (realDestination == realSource) {
       return;
     }
-    
+
     int sumOfRowNumbers = realDestination.getNumberOfRows() + realSource.getNumberOfRows();
-        
+
     // merge two tables and update number of rows
     // use rank heuristic
     int realDestinationRank = realDestination.getRank();
     int realSourceRank = realSource.getRank();
-    
+
     if (realDestinationRank < realSourceRank) {
       realDestination.setParent(realSource);
       realSource.setNumberOfRows(sumOfRowNumbers);
@@ -60,11 +62,11 @@ public class MergingTables {
       realSource.setParent(realDestination);
       realDestination.setNumberOfRows(sumOfRowNumbers);
     }
-    
+
     if (realDestinationRank == realSourceRank) {
-      realDestination.setRank(realDestinationRank + 1); 
+      realDestination.setRank(realDestinationRank + 1);
     }
-    
+
     // update maximumNumberOfRows
     maximumNumberOfRows = Math.max(maximumNumberOfRows, sumOfRowNumbers);
   }
@@ -99,18 +101,26 @@ public class MergingTables {
     public Table getParent() {
       return parent;
     }
-    
+
     public void setParent(Table parent) {
       this.parent = parent;
     }
-    
+
     public Table findRealParent() {
       Table p = parent;
       Table q = p.getParent();
 
+      List<Table> tempList = new ArrayList<>();
+
       while (p != q) {
+        tempList.add(p);
         p = q;
         q = p.getParent();
+      }
+
+      // path compression
+      for (Table t : tempList) {
+        t.setParent(p);
       }
 
       return p;
