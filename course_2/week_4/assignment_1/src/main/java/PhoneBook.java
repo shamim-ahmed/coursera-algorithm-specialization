@@ -1,103 +1,107 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class PhoneBook {
+  private enum QueryType {
+    ADD, DELETE, FIND
+  };
+
+  private static final String QUERY_ADD = "add";
+  private static final String QUERY_DELETE = "del";
+  private static final String QUERY_FIND = "find";
+  private static final String RESULT_NOT_FOUND = "not found";
 
   private FastScanner in = new FastScanner();
-  // Keep list of all existing (i.e. not deleted yet) contacts.
-  private List<Contact> contacts = new ArrayList<>();
+  private Map<Integer, String> contactMap = new HashMap<>();
 
   public static void main(String[] args) {
     new PhoneBook().processQueries();
   }
 
-  private Query readQuery() {
-    String type = in.next();
-    int number = in.nextInt();
-    if (type.equals("add")) {
-      String name = in.next();
-      return new Query(type, name, number);
-    } else {
-      return new Query(type, number);
+  public void processQueries() {
+    int queryCount = in.nextInt();
+
+    for (int i = 0; i < queryCount; ++i) {
+      Query query = readQuery();
+      processQuery(query);
     }
+  }
+
+  private void processQuery(Query query) {
+    QueryType type = query.getType();
+    int number = query.getNumber();
+    String name = query.getName();
+
+    if (type == QueryType.ADD) {
+      contactMap.put(number, name);
+    } else if (type == QueryType.DELETE) {
+      contactMap.remove(number);
+    } else if (type == QueryType.FIND) {
+      String response = contactMap.get(number);
+
+      if (response == null) {
+        response = RESULT_NOT_FOUND;
+      }
+
+      writeResponse(response);
+    }
+  }
+
+  private Query readQuery() {
+    String typeStr = in.next();
+    int number = in.nextInt();
+
+    Query result = null;
+
+    if (typeStr.equals(QUERY_ADD)) {
+      String name = in.next();
+      result = new Query(QueryType.ADD, number, name);
+    } else if (typeStr.equals(QUERY_DELETE)) {
+      result = new Query(QueryType.DELETE, number);
+    } else if (typeStr.equals(QUERY_FIND)) {
+      result = new Query(QueryType.FIND, number);
+    }
+
+    return result;
   }
 
   private void writeResponse(String response) {
     System.out.println(response);
   }
 
+  private static class Query {
+    private final QueryType type;
+    private final int number;
+    private final String name;
 
-  private void processQuery(Query query) {
-    if (query.type.equals("add")) {
-      // if we already have contact with such number,
-      // we should rewrite contact's name
-      boolean wasFound = false;
-      for (Contact contact : contacts)
-        if (contact.number == query.number) {
-          contact.name = query.name;
-          wasFound = true;
-          break;
-        }
-      // otherwise, just add it
-      if (!wasFound)
-        contacts.add(new Contact(query.name, query.number));
-    } else if (query.type.equals("del")) {
-      for (Iterator<Contact> it = contacts.iterator(); it.hasNext();)
-        if (it.next().number == query.number) {
-          it.remove();
-          break;
-        }
-    } else {
-      String response = "not found";
-      for (Contact contact : contacts)
-        if (contact.number == query.number) {
-          response = contact.name;
-          break;
-        }
-      writeResponse(response);
-    }
-  }
-
-  public void processQueries() {
-    int queryCount = in.nextInt();
-    for (int i = 0; i < queryCount; ++i)
-      processQuery(readQuery());
-  }
-
-  static class Contact {
-    String name;
-    int number;
-
-    public Contact(String name, int number) {
-      this.name = name;
-      this.number = number;
-    }
-  }
-
-  static class Query {
-    String type;
-    String name;
-    int number;
-
-    public Query(String type, String name, int number) {
-      this.type = type;
-      this.name = name;
-      this.number = number;
-    }
-
-    public Query(String type, int number) {
+    public Query(QueryType type, int number, String name) {
       this.type = type;
       this.number = number;
+      this.name = name;
+    }
+
+    public Query(QueryType type, int number) {
+      this(type, number, null);
+    }
+
+    public QueryType getType() {
+      return type;
+    }
+
+    public int getNumber() {
+      return number;
+    }
+
+    public String getName() {
+      return name;
     }
   }
 
-  class FastScanner {
+  private static class FastScanner {
     BufferedReader br;
     StringTokenizer st;
 
@@ -113,6 +117,7 @@ public class PhoneBook {
           e.printStackTrace();
         }
       }
+
       return st.nextToken();
     }
 
