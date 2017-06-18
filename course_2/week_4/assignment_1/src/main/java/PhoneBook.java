@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 public class PhoneBook {
@@ -12,7 +10,7 @@ public class PhoneBook {
   private static final String RESULT_NOT_FOUND = "not found";
 
   private FastScanner in = new FastScanner();
-  private Map<Integer, String> contactMap = new HashMap<>();
+  private SimpleHashMap contactMap = new SimpleHashMap();
 
   public static void main(String[] args) {
     new PhoneBook().processQueries();
@@ -30,9 +28,9 @@ public class PhoneBook {
   private void processQuery(Query query) {
     String type = query.getType();
     int number = query.getNumber();
-    String name = query.getName();
 
     if (type.equals(QUERY_ADD)) {
+      String name = query.getName();
       contactMap.put(number, name);
     } else if (type.equals(QUERY_DELETE)) {
       contactMap.remove(number);
@@ -92,6 +90,33 @@ public class PhoneBook {
 
     public String getName() {
       return name;
+    }
+  }
+
+  // A simple implementation of hash map that uses direct addressing scheme
+  private static class SimpleHashMap {
+    public static final int SIZE = 100000000;
+    private final String[] values = new String[SIZE];
+
+    public void put(int key, String val) {
+      validateKey(key);
+      values[key] = val;
+    }
+
+    public String get(int key) {
+      validateKey(key);
+      return values[key];
+    }
+
+    public void remove(int key) {
+      validateKey(key);
+      values[key] = null;
+    }
+
+    private void validateKey(int key) {
+      if (key < 0 || key >= SIZE) {
+        throw new IllegalArgumentException(String.format("Invalid key : %d", key));
+      }
     }
   }
 
