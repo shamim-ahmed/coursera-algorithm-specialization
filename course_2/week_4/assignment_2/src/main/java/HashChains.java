@@ -1,103 +1,238 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class HashChains {
 
+  private static final String QUERY_ADD = "add";
+  private static final String QUERY_DELETE = "del";
+  private static final String QUERY_FIND = "find";
+  private static final String QUERY_CHECK = "check";
+
+  private static final String YES_STR = "yes";
+  private static final String NO_STR = "no";
+
   private FastScanner in;
   private PrintWriter out;
-  // store all strings in one list
-  private List<String> elems;
-  // for hash function
-  private int bucketCount;
-  private int prime = 1000000007;
-  private int multiplier = 263;
+  private SimpleHashTable hashTable;
 
   public static void main(String[] args) throws IOException {
     new HashChains().processQueries();
   }
 
-  private int hashFunc(String s) {
-    long hash = 0;
-    for (int i = s.length() - 1; i >= 0; --i)
-      hash = (hash * multiplier + s.charAt(i)) % prime;
-    return (int) hash % bucketCount;
-  }
-
   private Query readQuery() throws IOException {
     String type = in.next();
-    if (!type.equals("check")) {
-      String s = in.next();
-      return new Query(type, s);
-    } else {
-      int ind = in.nextInt();
-      return new Query(type, ind);
-    }
-  }
+    Query query;
 
-  private void writeSearchResult(boolean wasFound) {
-    out.println(wasFound ? "yes" : "no");
-    // Uncomment the following if you want to play with the program interactively.
-    // out.flush();
+    if (type.equals(QUERY_CHECK)) {
+      int index = in.nextInt();
+      query = new Query(type, index);
+    } else {
+      String s = in.next();
+      query = new Query(type, s);
+    }
+
+    return query;
   }
 
   private void processQuery(Query query) {
-    switch (query.type) {
-      case "add":
-        if (!elems.contains(query.s))
-          elems.add(0, query.s);
-        break;
-      case "del":
-        if (elems.contains(query.s))
-          elems.remove(query.s);
-        break;
-      case "find":
-        writeSearchResult(elems.contains(query.s));
-        break;
-      case "check":
-        for (String cur : elems)
-          if (hashFunc(cur) == query.ind)
-            out.print(cur + " ");
-        out.println();
-        // Uncomment the following if you want to play with the program interactively.
-        // out.flush();
-        break;
-      default:
-        throw new RuntimeException("Unknown query: " + query.type);
+    String type = query.getType();
+
+    if (type.equals(QUERY_CHECK)) {
+      int index = query.getIndex();
+      hashTable.check(index);
+    } else {
+      String key = query.getKey();
+
+      if (type.equals(QUERY_ADD)) {
+        hashTable.add(key);
+      } else if (type.equals(QUERY_DELETE)) {
+        hashTable.remove(key);
+      } else if (type.equals(QUERY_FIND)) {
+        boolean found = hashTable.find(key);
+        System.out.println(found ? YES_STR : NO_STR);
+      }
     }
   }
 
   public void processQueries() throws IOException {
-    elems = new ArrayList<>();
     in = new FastScanner();
     out = new PrintWriter(new BufferedOutputStream(System.out));
-    bucketCount = in.nextInt();
+
+    int bucketCount = in.nextInt();
+    hashTable = new SimpleHashTable(bucketCount);
     int queryCount = in.nextInt();
+
     for (int i = 0; i < queryCount; ++i) {
-      processQuery(readQuery());
+      Query query = readQuery();
+      processQuery(query);
     }
+
     out.close();
   }
 
-  static class Query {
-    String type;
-    String s;
-    int ind;
+  private static class Query {
+    public static final int INVALID_INDEX = -1;
 
-    public Query(String type, String s) {
+    private final String type;
+    private String key;
+    private int index = INVALID_INDEX;
+
+    public Query(String type, String key) {
       this.type = type;
-      this.s = s;
+      this.key = key;
     }
 
-    public Query(String type, int ind) {
+    public Query(String type, int index) {
       this.type = type;
-      this.ind = ind;
+      this.index = index;
+    }
+
+    public String getKey() {
+      return key;
+    }
+
+    public int getIndex() {
+      return index;
+    }
+
+    public String getType() {
+      return type;
     }
   }
 
-  static class FastScanner {
+  private static class ListNode {
+    private final String key;
+    private ListNode previous;
+    private ListNode next;
+
+    public ListNode(String key) {
+      this.key = key;
+    }
+
+    public String getKey() {
+      return key;
+    }
+
+    public ListNode getPrevious() {
+      return previous;
+    }
+
+    public void setPrevious(ListNode previous) {
+      this.previous = previous;
+    }
+
+    public ListNode getNext() {
+      return next;
+    }
+
+    public void setNext(ListNode next) {
+      this.next = next;
+    }
+  }
+
+  private static class SimpleHashTable {
+    private static final long PRIME = 1000000007L;
+    private static final long MULTIPLIER = 263L;
+    private static final String BLANK_SPACE = " ";
+
+    private final int bucketCount;
+    private final ListNode[] nodeArray;
+
+    public SimpleHashTable(int bucketCount) {
+      this.bucketCount = bucketCount;
+      nodeArray = new ListNode[bucketCount];
+    }
+
+    public void add(String key) {
+      int index = hashFunction(key);
+
+      if (findNode(key, index) != null) {
+        return;
+      }
+
+      ListNode head = nodeArray[index];
+      ListNode newNode = new ListNode(key);
+      nodeArray[index] = newNode;
+      newNode.setNext(head);
+
+      if (head != null) {
+        head.setPrevious(newNode);
+      }
+    }
+
+    public void remove(String key) {
+      ListNode node = findNode(key);
+
+      if (node == null) {
+        return;
+      }
+
+      ListNode p = node.getPrevious();
+      ListNode q = node.getNext();
+
+      if (p != null) {
+        p.setNext(q);
+      }
+
+      if (q != null) {
+        q.setPrevious(p);
+      }
+    }
+
+    public boolean find(String key) {
+      ListNode node = findNode(key);
+      return node != null;
+    }
+
+    public void check(int index) {
+      ListNode p = nodeArray[index];
+
+      while (p != null) {
+        System.out.print(p.getKey());
+
+        ListNode q = p.getNext();
+
+        if (q != null) {
+          System.out.print(BLANK_SPACE);
+        }
+
+        p = q;
+      }
+
+      System.out.println();
+    }
+
+    private ListNode findNode(String key) {
+      int index = hashFunction(key);
+      return findNode(key, index);
+    }
+
+    private ListNode findNode(String key, int index) {
+      ListNode p = nodeArray[index];
+
+      while (p != null && !key.equals(p.getKey())) {
+        p = p.getNext();
+      }
+
+      return p;
+    }
+
+    private int hashFunction(String key) {
+      char[] charArray = key.toCharArray();
+      long hc = 0;
+      long x = 1L;
+
+      for (int i = 0; i < charArray.length; i++) {
+        hc += ((long) charArray[i]) * x;
+        x *= MULTIPLIER;
+      }
+
+      hc = hc % PRIME;
+      return (int) (hc % bucketCount);
+    }
+  }
+
+  private static class FastScanner {
     private BufferedReader reader;
     private StringTokenizer tokenizer;
 
