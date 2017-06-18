@@ -161,7 +161,8 @@ public class HashChains {
     }
 
     public void remove(String key) {
-      ListNode node = findNode(key);
+      int index = hashFunction(key);
+      ListNode node = findNode(key, index);
 
       if (node == null) {
         return;
@@ -176,6 +177,11 @@ public class HashChains {
 
       if (q != null) {
         q.setPrevious(p);
+      }
+      
+      // special check for removing the head of the linked list
+      if (p == null) {
+        nodeArray[index] = q;
       }
     }
 
