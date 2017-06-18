@@ -6,10 +6,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class PhoneBook {
-  private enum QueryType {
-    ADD, DELETE, FIND
-  };
-
   private static final String QUERY_ADD = "add";
   private static final String QUERY_DELETE = "del";
   private static final String QUERY_FIND = "find";
@@ -32,15 +28,15 @@ public class PhoneBook {
   }
 
   private void processQuery(Query query) {
-    QueryType type = query.getType();
+    String type = query.getType();
     int number = query.getNumber();
     String name = query.getName();
 
-    if (type == QueryType.ADD) {
+    if (type.equals(QUERY_ADD)) {
       contactMap.put(number, name);
-    } else if (type == QueryType.DELETE) {
+    } else if (type.equals(QUERY_DELETE)) {
       contactMap.remove(number);
-    } else if (type == QueryType.FIND) {
+    } else if (type.equals(QUERY_FIND)) {
       String response = contactMap.get(number);
 
       if (response == null) {
@@ -52,18 +48,16 @@ public class PhoneBook {
   }
 
   private Query readQuery() {
-    String typeStr = in.next();
+    String type = in.next();
     int number = in.nextInt();
 
     Query result = null;
 
-    if (typeStr.equals(QUERY_ADD)) {
+    if (type.equals(QUERY_ADD)) {
       String name = in.next();
-      result = new Query(QueryType.ADD, number, name);
-    } else if (typeStr.equals(QUERY_DELETE)) {
-      result = new Query(QueryType.DELETE, number);
-    } else if (typeStr.equals(QUERY_FIND)) {
-      result = new Query(QueryType.FIND, number);
+      result = new Query(type, number, name);
+    } else {
+      result = new Query(type, number);
     }
 
     return result;
@@ -74,21 +68,21 @@ public class PhoneBook {
   }
 
   private static class Query {
-    private final QueryType type;
+    private final String type;
     private final int number;
     private final String name;
 
-    public Query(QueryType type, int number, String name) {
+    public Query(String type, int number, String name) {
       this.type = type;
       this.number = number;
       this.name = name;
     }
 
-    public Query(QueryType type, int number) {
+    public Query(String type, int number) {
       this(type, number, null);
     }
 
-    public QueryType getType() {
+    public String getType() {
       return type;
     }
 
