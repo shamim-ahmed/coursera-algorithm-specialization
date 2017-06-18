@@ -2,7 +2,6 @@ import java.io.*;
 import java.util.StringTokenizer;
 
 public class HashChains {
-
   private static final String QUERY_ADD = "add";
   private static final String QUERY_DELETE = "del";
   private static final String QUERY_FIND = "find";
@@ -178,7 +177,7 @@ public class HashChains {
       if (q != null) {
         q.setPrevious(p);
       }
-      
+
       // special check for removing the head of the linked list
       if (p == null) {
         nodeArray[index] = q;
@@ -229,11 +228,10 @@ public class HashChains {
       long x = 1L;
 
       for (int i = 0; i < charArray.length; i++) {
-        hc += ((long) charArray[i]) * x;
+        hc = (hc + ((long) charArray[i]) * x) % PRIME;
         x *= MULTIPLIER;
       }
 
-      hc = hc % PRIME;
       return (int) (hc % bucketCount);
     }
   }
