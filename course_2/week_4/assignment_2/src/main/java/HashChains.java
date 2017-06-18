@@ -132,7 +132,6 @@ public class HashChains {
   private static class SimpleHashTable {
     private static final long PRIME = 1000000007L;
     private static final long MULTIPLIER = 263L;
-    private static final String BLANK_SPACE = " ";
 
     private final int bucketCount;
     private final ListNode[] nodeArray;
@@ -193,15 +192,8 @@ public class HashChains {
       ListNode p = nodeArray[index];
 
       while (p != null) {
-        System.out.print(p.getKey());
-
-        ListNode q = p.getNext();
-
-        if (q != null) {
-          System.out.print(BLANK_SPACE);
-        }
-
-        p = q;
+        System.out.printf("%s ", p.getKey());
+        p = p.getNext();
       }
 
       System.out.println();
@@ -229,7 +221,7 @@ public class HashChains {
 
       for (int i = 0; i < charArray.length; i++) {
         hc = (hc + ((long) charArray[i]) * x) % PRIME;
-        x *= MULTIPLIER;
+        x = (x * MULTIPLIER) % PRIME;
       }
 
       return (int) (hc % bucketCount);
