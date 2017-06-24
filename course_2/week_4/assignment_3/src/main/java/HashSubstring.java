@@ -64,13 +64,22 @@ public class HashSubstring {
   private static long[] computeHashes(char[] textChars, int textLength, int patternLength) {
     final int n = textLength - patternLength + 1;
     long[] hashValues = new long[n];
+    long y = 1L;
 
-    for (int i = 0; i < n; i++) {
-      hashValues[i] = getHashValueFor(textChars, i, patternLength);
+    for (int i = 0; i < patternLength; i++) {
+      y = (y * MULTIPLIER) % PRIME;
     }
-    
+
+    hashValues[n - 1] = getHashValueFor(textChars, textLength - patternLength, patternLength);
+
+    for (int i = n - 2; i >= 0; i--) {
+      hashValues[i] = (MULTIPLIER * hashValues[i + 1] + (long) textChars[i]
+          - (((long) textChars[i + patternLength]) * y) % PRIME) % PRIME;
+    }
+
     return hashValues;
   }
+
 
   private static long getHashValueFor(char[] charArray, int i, int patternLength) {
     long hc = 0;
