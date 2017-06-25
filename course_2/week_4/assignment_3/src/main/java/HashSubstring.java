@@ -72,8 +72,14 @@ public class HashSubstring {
     hashValues[n - 1] = getHashValueFor(textChars, textLength - patternLength, patternLength);
 
     for (int i = n - 2; i >= 0; i--) {
-      hashValues[i] = (MULTIPLIER * hashValues[i + 1] + (long) textChars[i]
-          - (((long) textChars[i + patternLength]) * y) % PRIME) % PRIME;
+      long temp = MULTIPLIER * hashValues[i + 1] + (long) textChars[i]
+          - (((long) textChars[i + patternLength]) * y) % PRIME;
+
+      if (temp < 0) {
+        temp += PRIME;
+      }
+
+      hashValues[i] = temp % PRIME;
     }
 
     return hashValues;
