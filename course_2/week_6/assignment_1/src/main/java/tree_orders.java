@@ -2,7 +2,7 @@ import java.util.*;
 import java.io.*;
 
 public class tree_orders {
-  private static final int INVALID_VALUE = -1;
+  private static final int INVALID_INDEX = -1;
 
   class FastScanner {
     StringTokenizer tok = new StringTokenizer("");
@@ -42,55 +42,81 @@ public class tree_orders {
     }
 
     List<Integer> inOrder() {
-      ArrayList<Integer> result = new ArrayList<Integer>();
-      inOrderTraversal(0, result);
+      List<Integer> result = new ArrayList<>();
+      Stack<Integer> stack = new Stack<>();
+      int i = 0;
+      int count = 0;
 
-      return result;
-    }
+      while (count < n) {
+        while (i != INVALID_INDEX) {
+          stack.push(i);
+          i = left[i];
+        }
 
-    private void inOrderTraversal(int i, List<Integer> result) {
-      if (i == INVALID_VALUE) {
-        return;
+        i = stack.pop();
+        result.add(key[i]);
+        count++;
+        i = right[i];
       }
 
-      inOrderTraversal(left[i], result);
-      result.add(key[i]);
-      inOrderTraversal(right[i], result);
+      return result;
     }
 
     List<Integer> preOrder() {
       ArrayList<Integer> result = new ArrayList<Integer>();
-      preOrderTraversal(0, result);
+      Stack<Integer> stack = new Stack<>();
+      stack.push(0);
+      int count = 0;
 
-      return result;
-    }
+      while (count < n) {
+        int i = stack.pop();
+        result.add(key[i]);
+        count++;
 
-    private void preOrderTraversal(int i, List<Integer> result) {
-      if (i == INVALID_VALUE) {
-        return;
+        if (right[i] != INVALID_INDEX) {
+          stack.push(right[i]);
+        }
+
+        if (left[i] != INVALID_INDEX) {
+          stack.push(left[i]);
+        }
       }
 
-      result.add(key[i]);
-      preOrderTraversal(left[i], result);
-      preOrderTraversal(right[i], result);
+      return result;
     }
 
     List<Integer> postOrder() {
       ArrayList<Integer> result = new ArrayList<Integer>();
-      postOrderTraversal(0, result);
+      Stack<Integer> stack = new Stack<>();
+      boolean[] flags = new boolean[n];
+      stack.push(0);
+      int count = 0;
+
+      while (count < n) {
+        int i = stack.peek();
+
+        if (isVisited(left[i], flags) && isVisited(right[i], flags)) {
+          stack.pop();
+          flags[i] = true;
+          result.add(key[i]);
+          count++;
+        } else {
+          if (right[i] != INVALID_INDEX) {
+            stack.push(right[i]);
+          }
+
+          if (left[i] != INVALID_INDEX) {
+            stack.push(left[i]);
+          }
+        }
+      }
 
       return result;
     }
+  }
 
-    private void postOrderTraversal(int i, List<Integer> result) {
-      if (i == INVALID_VALUE) {
-        return;
-      }
-
-      postOrderTraversal(left[i], result);
-      postOrderTraversal(right[i], result);
-      result.add(key[i]);
-    }
+  boolean isVisited(int i, boolean[] flags) {
+    return i == INVALID_INDEX || flags[i];
   }
 
   static public void main(String[] args) throws IOException {
