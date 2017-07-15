@@ -11,8 +11,10 @@ public class is_bst_hard {
     }
 
     String next() throws IOException {
-      while (!tok.hasMoreElements())
+      while (!tok.hasMoreElements()) {
         tok = new StringTokenizer(in.readLine());
+      }
+      
       return tok.nextToken();
     }
 
@@ -74,11 +76,11 @@ public class is_bst_hard {
         int leftIndex = in.nextInt();
         int rightIndex = in.nextInt();
 
-        Node currentNode = findNode(i);
+        Node currentNode = findNodeForIndex(i);
         currentNode.setKey(key);
 
-        Node leftNode = findNode(leftIndex);
-        Node rightNode = findNode(rightIndex);
+        Node leftNode = findNodeForIndex(leftIndex);
+        Node rightNode = findNodeForIndex(rightIndex);
         currentNode.setLeft(leftNode);
         currentNode.setRight(rightNode);
 
@@ -92,7 +94,7 @@ public class is_bst_hard {
       }
     }
 
-    Node findNode(int index) {
+    Node findNodeForIndex(int index) {
       if (index < 0 || index >= numberOfNodes) {
         return null;
       }
@@ -147,7 +149,7 @@ public class is_bst_hard {
       if (numberOfNodes == 0) {
         return new Node[0];
       }
-      
+
       Stack<Node> stack = new Stack<>();
       Node[] resultArray = new Node[numberOfNodes];
       Node currentNode = tree[0];
