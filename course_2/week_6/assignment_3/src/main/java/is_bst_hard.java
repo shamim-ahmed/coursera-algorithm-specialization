@@ -14,7 +14,7 @@ public class is_bst_hard {
       while (!tok.hasMoreElements()) {
         tok = new StringTokenizer(in.readLine());
       }
-      
+
       return tok.nextToken();
     }
 
@@ -59,6 +59,11 @@ public class is_bst_hard {
 
     public void setParent(Node parent) {
       this.parent = parent;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(key);
     }
   }
 
@@ -106,29 +111,18 @@ public class is_bst_hard {
       return tree[index];
     }
 
-    Node findNext(Node currentNode) {
-      Node result = null;
-      Node w = currentNode.getRight();
-
-      if (w != null) {
-        while (w.getLeft() != null) {
-          w = w.getLeft();
-        }
-
-        result = w;
-      } else {
-        Node q = currentNode;
-        Node p = currentNode.getParent();
-
-        while (p != null && p.getLeft() != q) {
-          q = p;
-          p = p.getParent();
-        }
-
-        result = p;
+    Node findNextInRightSubtree(Node currentNode) {
+      if (currentNode == null) {
+        return null;
       }
 
-      return result;
+      Node w = currentNode.getRight();
+
+      while (w != null && w.getLeft() != null) {
+        w = w.getLeft();
+      }
+
+      return w;
     }
 
     boolean isBinarySearchTree() {
@@ -139,6 +133,13 @@ public class is_bst_hard {
         if (nodeArray[i].getKey() > nodeArray[i + 1].getKey()) {
           result = false;
           break;
+        } else if (nodeArray[i].getKey() == nodeArray[i + 1].getKey()) {
+          Node temp = findNextInRightSubtree(nodeArray[i]);
+
+          if (temp != nodeArray[i + 1]) {
+            result = false;
+            break;
+          }
         }
       }
 
