@@ -118,9 +118,9 @@ public class SetRangeSum {
   // bigger key (next value in the order).
   // If the key is bigger than all keys in the tree,
   // then result is null.
-  VertexPair find(Vertex root, int key) {
-    Vertex v = root;
-    Vertex last = root;
+  VertexPair find(Vertex r, int key) {
+    Vertex v = r;
+    Vertex last = r;
     Vertex next = null;
     while (v != null) {
       if (v.key >= key && (next == null || v.key < next.key)) {
@@ -136,17 +136,17 @@ public class SetRangeSum {
         v = v.left;
       }
     }
-    root = splay(last);
-    return new VertexPair(next, root);
+    r = splay(last);
+    return new VertexPair(next, r);
   }
 
-  VertexPair split(Vertex root, int key) {
+  VertexPair split(Vertex r, int key) {
     VertexPair result = new VertexPair();
-    VertexPair findAndRoot = find(root, key);
-    root = findAndRoot.right;
+    VertexPair findAndRoot = find(r, key);
+    r = findAndRoot.right;
     result.right = findAndRoot.left;
     if (result.right == null) {
-      result.left = root;
+      result.left = r;
       return result;
     }
     result.right = splay(result.right);
