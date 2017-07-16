@@ -197,9 +197,14 @@ public class SetRangeSum {
   }
 
   boolean find(int x) {
-    // Implement find yourself
+    VertexPair pair = find(root, x);
+    Vertex v = pair.left;
+    
+    if (pair.right != null) {
+      root = pair.right;
+    }
 
-    return false;
+    return v != null && v.key == x;
   }
 
   long sum(int from, int to) {
