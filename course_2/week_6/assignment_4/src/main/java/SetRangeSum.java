@@ -192,8 +192,34 @@ public class SetRangeSum {
   }
 
   void erase(int x) {
-    // Implement erase yourself
-
+    VertexPair pair = find(root, x);
+    Vertex v = pair.left;
+    
+    if (v != null && v.key == x) {
+      // we found the node, so we can delete it
+      Vertex r = pair.right;
+      Vertex lv = r.left;
+      Vertex rv = r.right;
+      root = r;
+      
+      if (lv == null) {
+        root = rv;
+        
+        if (rv != null) {
+          rv.parent = null;
+        }
+      } else {
+        Vertex m = findMax(lv);
+        splay(m);
+        m.right = rv;
+        m.parent = null;
+        root = m;
+        
+        if (rv != null) {
+          rv.parent = root;
+        }
+      }
+    }
   }
 
   boolean find(int x) {
@@ -209,18 +235,28 @@ public class SetRangeSum {
 
   long sum(int from, int to) {
     VertexPair leftMiddle = split(root, from);
-    Vertex left = leftMiddle.left;
     Vertex middle = leftMiddle.right;
     VertexPair middleRight = split(middle, to + 1);
     middle = middleRight.left;
-    Vertex right = middleRight.right;
     long ans = 0;
-    // Complete the implementation of sum
-
+    
+    if (middle != null) {
+      ans = middle.sum;
+    }
+    
     return ans;
   }
-
-
+  
+  Vertex findMax(Vertex v) {
+    Vertex m = v;
+    
+    while (m != null && m.right != null) {
+      m = m.right;
+    }
+    
+    return m;
+  }
+  
   public static final int MODULO = 1000000001;
 
   void solve() throws IOException {
