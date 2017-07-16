@@ -192,37 +192,20 @@ public class SetRangeSum {
   }
 
   void erase(int x) {
-    VertexPair pair = find(root, x);
-    Vertex v = pair.left;
+    VertexPair leftMiddle = split(root, x);
+    Vertex left = leftMiddle.left;
+    Vertex middle = leftMiddle.right;
+    VertexPair middleRight = split(middle, x + 1);
+    Vertex right = middleRight.right;
     
-    if (v != null && v.key == x) {
-      // we found the node, so we can delete it
-      Vertex r = pair.right;
-      Vertex lv = r.left;
-      Vertex rv = r.right;
-      root = r;
-      
-      if (lv == null) {
-        root = rv;
-        
-        if (rv != null) {
-          rv.parent = null;
-        }
-      } else {
-        Vertex m = findMax(lv);
-        splay(m);
-        m.right = rv;
-        m.parent = null;
-        root = m;
-        
-        if (rv != null) {
-          rv.parent = root;
-        }
-      }
-    }
+    root = merge(left, right);
   }
 
   boolean find(int x) {
+    if (root == null) {
+      return false;
+    }
+    
     VertexPair pair = find(root, x);
     Vertex v = pair.left;
     
@@ -235,26 +218,19 @@ public class SetRangeSum {
 
   long sum(int from, int to) {
     VertexPair leftMiddle = split(root, from);
+    Vertex left = leftMiddle.left;
     Vertex middle = leftMiddle.right;
     VertexPair middleRight = split(middle, to + 1);
     middle = middleRight.left;
+    Vertex right = middleRight.right;
     long ans = 0;
     
     if (middle != null) {
       ans = middle.sum;
     }
     
+    root = merge(merge(left, middle), right);
     return ans;
-  }
-  
-  Vertex findMax(Vertex v) {
-    Vertex m = v;
-    
-    while (m != null && m.right != null) {
-      m = m.right;
-    }
-    
-    return m;
   }
   
   public static final int MODULO = 1000000001;
