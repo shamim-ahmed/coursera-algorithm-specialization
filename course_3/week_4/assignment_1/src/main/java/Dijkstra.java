@@ -33,6 +33,77 @@ public class Dijkstra {
   }
 
   private static int distance(ArrayList<Integer>[] adj, ArrayList<Integer>[] cost, int s, int t) {
-    return -1;
+    VertexData[] dataArray = new VertexData[adj.length];
+
+    for (int i = 0; i < dataArray.length; i++) {
+      dataArray[i] = new VertexData(i, Integer.MAX_VALUE);
+    }
+
+    PriorityQueue<VertexData> pQueue = new PriorityQueue<>(new Comparator<VertexData>() {
+      @Override
+      public int compare(VertexData data1, VertexData data2) {
+        if (data1.getDistance() < data2.getDistance()) {
+          return -1;
+        }
+
+        if (data1.getDistance() > data2.getDistance()) {
+          return 1;
+        }
+
+        return 0;
+      }
+    });
+
+    // initialize the priority queue
+    dataArray[s].setDistance(0);
+    pQueue.offer(dataArray[s]);
+
+    // Dijkstra's algorithm
+    while (!pQueue.isEmpty()) {
+      VertexData uData = pQueue.poll();
+      int u = uData.getVertex();
+
+      for (int i = 0, n = adj[u].size(); i < n; i++) {
+        int v = adj[u].get(i);
+        int edgeWeight = cost[u].get(i);
+        VertexData vData = dataArray[v];
+
+        if (vData.getDistance() > uData.getDistance() + edgeWeight) {
+          pQueue.remove(vData);
+          vData.setDistance(uData.getDistance() + edgeWeight);
+          pQueue.offer(vData);
+        }
+      }
+    }
+
+    int result = dataArray[t].getDistance();
+
+    if (result == Integer.MAX_VALUE) {
+      result = -1;
+    }
+
+    return result;
+  }
+
+  private static class VertexData {
+    private final int vertex;
+    private int distance;
+
+    public VertexData(int vertex, int distance) {
+      this.vertex = vertex;
+      this.distance = distance;
+    }
+
+    public int getVertex() {
+      return vertex;
+    }
+
+    public int getDistance() {
+      return distance;
+    }
+
+    public void setDistance(int distance) {
+      this.distance = distance;
+    }
   }
 }
