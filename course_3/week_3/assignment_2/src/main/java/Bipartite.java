@@ -4,10 +4,41 @@ import java.util.Queue;
 import java.util.Scanner;
 
 public class Bipartite {
-  private static int bipartite(ArrayList<Integer>[] adj) {
-    // write your code here
-    return -1;
+  private enum Color {
+    RED, GREEN
   }
+
+  private static int bipartite(ArrayList<Integer>[] adj) {
+    int result = 1;
+    Queue<Integer> queue = new LinkedList<>();
+    Color[] vertexColors = new Color[adj.length];
+
+    int s = 0;
+    vertexColors[s] = Color.RED;
+    queue.offer(s);
+
+    while (!queue.isEmpty() && result != 0) {
+      int u = queue.poll();
+      Color otherColor = vertexColors[u] == Color.RED ? Color.GREEN : Color.RED;
+
+      for (int v : adj[u]) {
+        if (vertexColors[v] != null && vertexColors[v] != vertexColors[u]) {
+          continue;
+        }
+
+        if (vertexColors[v] == vertexColors[u]) {
+          result = 0;
+          break;
+        }
+
+        vertexColors[v] = otherColor;
+        queue.offer(v);
+      }
+    }
+
+    return result;
+  }
+
 
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
