@@ -4,7 +4,7 @@ import java.util.Queue;
 import java.util.Scanner;
 
 public class BFS {
-  private static int distance(ArrayList<Integer>[] adj, int s, int t) {
+  private static int computeDistance(ArrayList<Integer>[] adj, int s, int t) {
     int[] distance = new int[adj.length];
 
     for (int i = 0; i < adj.length; i++) {
@@ -57,7 +57,7 @@ public class BFS {
 
     int x = scanner.nextInt() - 1;
     int y = scanner.nextInt() - 1;
-    System.out.println(distance(adj, x, y));
+    System.out.println(computeDistance(adj, x, y));
 
     scanner.close();
   }
