@@ -2,10 +2,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class NegativeCycle {
-  private static int negativeCycle(ArrayList<Integer>[] adj, ArrayList<Integer>[] cost) {
-    // write your code here
-    return 0;
-  }
+  // the value of MAX is determined by constraints on input
+  private static final int MAX = 1000000000;
 
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
@@ -32,5 +30,51 @@ public class NegativeCycle {
 
     System.out.println(negativeCycle(adj, cost));
     scanner.close();
+  }
+
+  private static int negativeCycle(ArrayList<Integer>[] adj, ArrayList<Integer>[] cost) {
+    int[] distance = new int[adj.length];
+
+    for (int i = 0; i < distance.length; i++) {
+      distance[i] = MAX;
+    }
+
+    for (int i = 0; i < adj.length - 1; i++) {
+      relax(adj, cost, distance);
+    }
+
+    return canRelax(adj, cost, distance) ? 1 : 0;
+  }
+
+  private static void relax(ArrayList<Integer>[] adj, ArrayList<Integer>[] cost, int[] distance) {
+    for (int u = 0; u < adj.length; u++) {
+      for (int i = 0, n = adj[u].size(); i < n; i++) {
+        int v = adj[u].get(i);
+        int edgeWeight = cost[u].get(i);
+
+        if (distance[v] > distance[u] + edgeWeight) {
+          distance[v] = distance[u] + edgeWeight;
+        }
+      }
+    }
+  }
+
+  private static boolean canRelax(ArrayList<Integer>[] adj, ArrayList<Integer>[] cost,
+      int[] distance) {
+    boolean result = false;
+
+    for (int u = 0; u < adj.length && !result; u++) {
+      for (int i = 0, n = adj[u].size(); i < n; i++) {
+        int v = adj[u].get(i);
+        int edgeWeight = cost[u].get(i);
+
+        if (distance[v] > distance[u] + edgeWeight) {
+          result = true;
+          break;
+        }
+      }
+    }
+
+    return result;
   }
 }
