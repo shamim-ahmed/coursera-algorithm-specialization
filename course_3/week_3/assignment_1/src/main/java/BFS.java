@@ -15,9 +15,9 @@ public class BFS {
     Queue<Integer> queue = new LinkedList<>();
     queue.offer(s);
 
-    boolean done = false;
+    boolean found = false;
 
-    while (!queue.isEmpty() && !done) {
+    while (!queue.isEmpty() && !found) {
       int u = queue.poll();
 
       for (int v : adj[u]) {
@@ -26,7 +26,7 @@ public class BFS {
           queue.offer(v);
 
           if (v == t) {
-            done = true;
+            found = true;
             break;
           }
         }
