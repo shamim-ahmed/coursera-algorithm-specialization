@@ -125,11 +125,6 @@ public class ConnectingPoints {
 
       return 0;
     }
-
-    @Override
-    public String toString() {
-      return String.format("{%s, %s}, distance = %.4f", point1, point2, distance);
-    }
   }
 
   @SuppressWarnings("unused")
@@ -203,11 +198,6 @@ public class ConnectingPoints {
 
       Point otherPoint = (Point) obj;
       return x == otherPoint.x && y == otherPoint.y;
-    }
-
-    @Override
-    public String toString() {
-      return String.format("(%d, %d)", x, y);
     }
   }
 }
