@@ -90,7 +90,7 @@ public class ConnectingPoints {
   private static class Edge implements Comparable<Edge> {
     private final Point point1;
     private final Point point2;
-    final double distance;
+    private final double distance;
 
     public Edge(Point point1, Point point2) {
       this.point1 = point1;
@@ -173,8 +173,8 @@ public class ConnectingPoints {
   }
 
   private static class Point {
-    private final int x;
-    private final int y;
+    final int x;
+    final int y;
 
     public Point(int x, int y) {
       this.x = x;
