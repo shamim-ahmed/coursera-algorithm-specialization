@@ -6,6 +6,7 @@ import java.util.PriorityQueue;
 import java.util.Scanner;
 
 public class ConnectingPoints {
+
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
     int n = scanner.nextInt();
@@ -51,6 +52,7 @@ public class ConnectingPoints {
       DisjointSetNode node1 = nodeMap.get(point1);
       DisjointSetNode node2 = nodeMap.get(point2);
 
+      // check if the nodes belong to the same set
       DisjointSetNode root1 = node1.findRoot();
       DisjointSetNode root2 = node2.findRoot();
 
@@ -59,6 +61,7 @@ public class ConnectingPoints {
         union(root1, root2);
         edgeCount++;
 
+        // check if the tree is complete
         if (edgeCount == n - 1) {
           break;
         }
