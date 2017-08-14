@@ -27,6 +27,7 @@ public class ConnectingPoints {
     }
     
     double result = 0.0;
+    int edgeCount = 0;
 
     while (!edgeQueue.isEmpty()) {
       Edge edge = edgeQueue.poll();
@@ -41,6 +42,11 @@ public class ConnectingPoints {
       if (root1 != root2) {
         result += edge.getDistance();
         root2.setParent(root1);
+        edgeCount++;
+        
+        if (edgeCount == n - 1) {
+          break;
+        }
       }
     }
     
@@ -115,6 +121,7 @@ public class ConnectingPoints {
     
     public DisjointSetNode(Point point) {
       this.point = point;
+      parent = this;
     }
 
     public DisjointSetNode getParent() {
@@ -138,15 +145,13 @@ public class ConnectingPoints {
     }
 
     public DisjointSetNode findRoot() {
-      DisjointSetNode p = parent;
       DisjointSetNode q = this;
       
       List<DisjointSetNode> nodeList = new ArrayList<>();
 
-      while (p != null) {
+      while (q != q.parent) {
         nodeList.add(q); 
-        q = p;
-        p = p.parent;
+        q = q.parent;
       }
       
       // path compression
