@@ -112,18 +112,7 @@ public class ConnectingPoints {
 
     @Override
     public int compareTo(Edge otherEdge) {
-      long len1 = Double.doubleToLongBits(length);
-      long len2 = Double.doubleToLongBits(otherEdge.length);
-
-      if (len1 < len2) {
-        return -1;
-      }
-
-      if (len1 > len2) {
-        return 1;
-      }
-
-      return 0;
+      return Double.compare(length, otherEdge.length);
     }
   }
 

@@ -78,7 +78,7 @@ public class Clustering {
         union(root1, root2);
         double len = edge.getLength();
 
-        if (len < result) {
+        if (Double.compare(len, result) < 0) {
           result = len;
         }
 
