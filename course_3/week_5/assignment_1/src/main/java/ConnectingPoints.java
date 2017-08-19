@@ -87,7 +87,7 @@ public class ConnectingPoints {
     }
   }
 
-  private static class Edge implements Comparable<Edge> {
+  static class Edge implements Comparable<Edge> {
     private final Point point1;
     private final Point point2;
     private final double distance;
@@ -95,7 +95,7 @@ public class ConnectingPoints {
     public Edge(Point point1, Point point2) {
       this.point1 = point1;
       this.point2 = point2;
-      this.distance = Point.computeDistance(point1, point2);
+      distance = Point.computeDistance(point1, point2);
     }
 
     public Point getPoint1() {
@@ -127,8 +127,7 @@ public class ConnectingPoints {
     }
   }
 
-  @SuppressWarnings("unused")
-  private static class DisjointSetNode {
+  static class DisjointSetNode {
     private DisjointSetNode parent;
     private int rank;
 
@@ -172,13 +171,21 @@ public class ConnectingPoints {
     }
   }
 
-  private static class Point {
-    final int x;
-    final int y;
+  static class Point {
+    private final int x;
+    private final int y;
 
     public Point(int x, int y) {
       this.x = x;
       this.y = y;
+    }
+
+    public int getX() {
+      return x;
+    }
+
+    public int getY() {
+      return y;
     }
 
     public static double computeDistance(Point p1, Point p2) {
