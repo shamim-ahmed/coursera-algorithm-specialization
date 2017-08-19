@@ -81,7 +81,6 @@ public class Clustering {
         if (Double.compare(len, result) < 0) {
           result = len;
         }
-
       }
     }
 
