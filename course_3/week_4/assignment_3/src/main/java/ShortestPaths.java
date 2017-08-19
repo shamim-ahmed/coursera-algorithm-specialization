@@ -66,6 +66,7 @@ public class ShortestPaths {
     distance[s] = 0;
     reachable[s] = 1;
 
+    // relax all edges n - 1 times
     for (int k = 0; k < n - 1; k++) {
       for (int i = 0; i < n; i++) {
         for (int idx = 0, len = adj[i].size(); idx < len; idx++) {
@@ -81,6 +82,9 @@ public class ShortestPaths {
       }
     }
 
+    // Perform one additional relaxation step to detect if there is any negative cycle.
+    // If such a cycle is found, then there is no shortest path from the source 
+    // to a vertex on the negative cycle.
     for (int i = 0; i < n; i++) {
       for (int idx = 0, len = adj[i].size(); idx < len; idx++) {
         int j = adj[i].get(idx);
@@ -100,7 +104,6 @@ public class ShortestPaths {
   private static List<Integer> findCycle(int v, int[] previous) {
     List<Integer> resultList = new ArrayList<>();
     resultList.add(v);
-
     int x = previous[v];
 
     while (x != -1 && x != v) {
