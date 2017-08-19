@@ -57,7 +57,7 @@ public class ConnectingPoints {
       DisjointSetNode root2 = node2.findRoot();
 
       if (root1 != root2) {
-        result += edge.getDistance();
+        result += edge.getLength();
         union(root1, root2);
         edgeCount++;
 
@@ -90,12 +90,12 @@ public class ConnectingPoints {
   static class Edge implements Comparable<Edge> {
     private final Point point1;
     private final Point point2;
-    private final double distance;
+    private final double length;
 
     public Edge(Point point1, Point point2) {
       this.point1 = point1;
       this.point2 = point2;
-      distance = Point.computeDistance(point1, point2);
+      length = Point.computeDistance(point1, point2);
     }
 
     public Point getPoint1() {
@@ -106,20 +106,20 @@ public class ConnectingPoints {
       return point2;
     }
 
-    public double getDistance() {
-      return distance;
+    public double getLength() {
+      return length;
     }
 
     @Override
     public int compareTo(Edge otherEdge) {
-      long d1 = Double.doubleToLongBits(distance);
-      long d2 = Double.doubleToLongBits(otherEdge.distance);
+      long len1 = Double.doubleToLongBits(length);
+      long len2 = Double.doubleToLongBits(otherEdge.length);
 
-      if (d1 < d2) {
+      if (len1 < len2) {
         return -1;
       }
 
-      if (d1 > d2) {
+      if (len1 > len2) {
         return 1;
       }
 
