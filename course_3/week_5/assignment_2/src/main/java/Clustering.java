@@ -19,7 +19,7 @@ public class Clustering {
     }
 
     int k = scanner.nextInt();
-    System.out.printf("%.9f%n", clustering(xValues, yValues, k));
+    System.out.printf("%.12f%n", clustering(xValues, yValues, k));
     scanner.close();
   }
 
