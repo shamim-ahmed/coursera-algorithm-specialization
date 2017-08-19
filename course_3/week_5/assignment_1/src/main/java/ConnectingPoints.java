@@ -10,25 +10,25 @@ public class ConnectingPoints {
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
     int n = scanner.nextInt();
-    int[] x = new int[n];
-    int[] y = new int[n];
+    int[] xValues = new int[n];
+    int[] yValues = new int[n];
 
     for (int i = 0; i < n; i++) {
-      x[i] = scanner.nextInt();
-      y[i] = scanner.nextInt();
+      xValues[i] = scanner.nextInt();
+      yValues[i] = scanner.nextInt();
     }
 
-    System.out.printf("%.9f%n", minimumDistance(x, y));;
+    System.out.printf("%.9f%n", minimumDistance(xValues, yValues));;
     scanner.close();
   }
 
-  private static double minimumDistance(int[] x, int[] y) {
-    final int n = x.length;
+  private static double minimumDistance(int[] xValues, int[] yValues) {
+    final int n = xValues.length;
     Point[] pointArray = new Point[n];
     Map<Point, DisjointSetNode> nodeMap = new HashMap<>();
 
     for (int i = 0; i < n; i++) {
-      pointArray[i] = new Point(x[i], y[i]);
+      pointArray[i] = new Point(xValues[i], yValues[i]);
       DisjointSetNode node = new DisjointSetNode();
       nodeMap.put(pointArray[i], node);
     }
