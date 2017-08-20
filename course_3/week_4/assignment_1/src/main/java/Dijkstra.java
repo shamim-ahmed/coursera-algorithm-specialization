@@ -68,6 +68,10 @@ public class Dijkstra {
         int edgeWeight = cost[u].get(i);
         VertexData vData = dataArray[v];
 
+        if (uData.getDistance() == Integer.MAX_VALUE) {
+          continue;
+        }
+
         if (vData.getDistance() > uData.getDistance() + edgeWeight) {
           pQueue.remove(vData);
           vData.setDistance(uData.getDistance() + edgeWeight);
