@@ -1,7 +1,6 @@
 import java.util.*;
 
 public class ShortestPaths {
-  private static final long MAX = 1000000000000000L;
 
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
@@ -55,11 +54,10 @@ public class ShortestPaths {
   private static void shortestPaths(ArrayList<Integer>[] adj, ArrayList<Integer>[] cost, int s,
       long[] distance, int[] reachable, int[] shortest) {
     final int n = adj.length;
-    int[] previous = new int[n];
 
     for (int i = 0; i < n; i++) {
-      distance[i] = MAX;
-      previous[i] = -1;
+      distance[i] = Long.MAX_VALUE;
+      // we assume initially that there is a shortest path to each vertex
       shortest[i] = 1;
     }
 
@@ -73,44 +71,62 @@ public class ShortestPaths {
           int j = adj[i].get(idx);
           int weight = cost[i].get(idx);
 
+          if (distance[i] == Long.MAX_VALUE) {
+            continue;
+          }
+
           if (distance[j] > distance[i] + weight) {
             distance[j] = distance[i] + weight;
             reachable[j] = 1;
-            previous[j] = i;
           }
         }
       }
     }
 
     // Perform one additional relaxation step to detect if there is any negative cycle.
-    // If such a cycle is found, then there is no shortest path from the source 
-    // to a vertex on the negative cycle.
+    // If such a cycle is found, then there is no shortest path from the source
+    // to a vertex on the negative cycle and any vertex reachable from the negative cycle.
     for (int i = 0; i < n; i++) {
       for (int idx = 0, len = adj[i].size(); idx < len; idx++) {
         int j = adj[i].get(idx);
         int weight = cost[i].get(idx);
 
-        if (distance[j] > distance[i] + weight && shortest[j] != 0) {
-          List<Integer> cycle = findCycle(j, previous);
-
-          for (int k : cycle) {
-            shortest[k] = 0;
-          }
+        if (distance[i] == Long.MAX_VALUE) {
+          continue;
         }
+
+        if ((distance[j] > distance[i] + weight) && shortest[j] == 1) {
+          processCycle(j, adj, shortest);
+        }
+      }
+    }
+
+    // if a vertex is non-reachable, then there is no shortest path to it
+    for (int i = 0; i < n; i++) {
+      if (reachable[i] == 0) {
+        shortest[i] = 0;
       }
     }
   }
 
-  private static List<Integer> findCycle(int v, int[] previous) {
-    List<Integer> resultList = new ArrayList<>();
-    resultList.add(v);
-    int x = previous[v];
+  private static void processCycle(int v, ArrayList<Integer>[] adj, int[] shortest) {
+    Set<Integer> visited = new HashSet<>();
+    Stack<Integer> stack = new Stack<>();
+    stack.push(v);
 
-    while (x != -1 && x != v) {
-      resultList.add(x);
-      x = previous[x];
+    // perform depth first search of the graph
+    // starting from node v
+    while (!stack.isEmpty()) {
+      int i = stack.pop();
+
+      visited.add(i);
+      shortest[i] = 0;
+
+      for (int j : adj[i]) {
+        if (!visited.contains(j)) {
+          stack.push(j);
+        }
+      }
     }
-
-    return resultList;
   }
 }
