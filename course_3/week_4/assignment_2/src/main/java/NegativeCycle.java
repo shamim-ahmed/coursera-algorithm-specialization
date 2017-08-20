@@ -2,8 +2,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class NegativeCycle {
-  // the value of MAX is determined by constraints on input
-  private static final int MAX = 1000000000;
 
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
@@ -36,7 +34,7 @@ public class NegativeCycle {
     int[] distance = new int[adj.length];
 
     for (int i = 0; i < distance.length; i++) {
-      distance[i] = MAX;
+      distance[i] = Integer.MAX_VALUE;
     }
 
     for (int i = 0; i < adj.length - 1; i++) {
@@ -51,6 +49,10 @@ public class NegativeCycle {
       for (int i = 0, n = adj[u].size(); i < n; i++) {
         int v = adj[u].get(i);
         int edgeWeight = cost[u].get(i);
+
+        if (distance[u] == Integer.MAX_VALUE) {
+          continue;
+        }
 
         if (distance[v] > distance[u] + edgeWeight) {
           distance[v] = distance[u] + edgeWeight;
@@ -67,6 +69,10 @@ public class NegativeCycle {
       for (int i = 0, n = adj[u].size(); i < n; i++) {
         int v = adj[u].get(i);
         int edgeWeight = cost[u].get(i);
+
+        if (distance[u] == Integer.MAX_VALUE) {
+          continue;
+        }
 
         if (distance[v] > distance[u] + edgeWeight) {
           result = true;
