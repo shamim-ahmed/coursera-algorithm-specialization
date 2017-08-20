@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class NegativeCycle {
+  // the value of MAX is determined by constraints on input
+  private static final int MAX = 1000000000;
 
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
@@ -34,12 +36,9 @@ public class NegativeCycle {
     int[] distance = new int[adj.length];
 
     for (int i = 0; i < distance.length; i++) {
-      distance[i] = Integer.MAX_VALUE;
+      distance[i] = MAX;
     }
 
-    // set distance for source vertex
-    distance[0] = 0;
-    
     for (int i = 0; i < adj.length - 1; i++) {
       relax(adj, cost, distance);
     }
@@ -49,13 +48,9 @@ public class NegativeCycle {
 
   private static void relax(ArrayList<Integer>[] adj, ArrayList<Integer>[] cost, int[] distance) {
     for (int u = 0; u < adj.length; u++) {
-      for (int i = 0, len = adj[u].size(); i < len; i++) {
+      for (int i = 0, n = adj[u].size(); i < n; i++) {
         int v = adj[u].get(i);
         int edgeWeight = cost[u].get(i);
-
-        if (distance[u] == Integer.MAX_VALUE) {
-          continue;
-        }
 
         if (distance[v] > distance[u] + edgeWeight) {
           distance[v] = distance[u] + edgeWeight;
@@ -69,13 +64,9 @@ public class NegativeCycle {
     boolean result = false;
 
     for (int u = 0; u < adj.length && !result; u++) {
-      for (int i = 0, len = adj[u].size(); i < len; i++) {
+      for (int i = 0, n = adj[u].size(); i < n; i++) {
         int v = adj[u].get(i);
         int edgeWeight = cost[u].get(i);
-
-        if (distance[u] == Integer.MAX_VALUE) {
-          continue;
-        }
 
         if (distance[v] > distance[u] + edgeWeight) {
           result = true;
