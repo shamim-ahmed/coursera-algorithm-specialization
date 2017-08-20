@@ -119,6 +119,7 @@ public class ShortestPaths {
     while (!stack.isEmpty()) {
       int i = stack.pop();
 
+      // keep track of visited vertices in order to avoid infinite loop
       visited.add(i);
       shortest[i] = 0;
 
