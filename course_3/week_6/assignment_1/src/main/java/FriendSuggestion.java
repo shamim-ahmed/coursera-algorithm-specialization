@@ -48,9 +48,9 @@ public class FriendSuggestion {
 
     // Reinitialize the data structures before new query after the previous query 
     void clear() {
-      for (int v : workset) {
-        distance[0][v] = distance[1][v] = INFINITY;
-        visited[v] = false;
+      for (int i = 0; i < n; i++) {
+        distance[0][i] = distance[1][i] = INFINITY;
+        visited[i] = false;
       }
       
       for (int i = 0; i < n; i++) {
