@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
+// NOTE: This is not an accepted solution to the problem
 public class FriendSuggestion {
   private static class Impl {
     // Number of nodes
