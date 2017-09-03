@@ -33,33 +33,26 @@ public class InverseBWT {
     System.arraycopy(bwtArray, 0, sortedArray, 0, n);
     Arrays.sort(sortedArray);
 
-    StringBuilder[] matrix = new StringBuilder[n];
+    char[][] matrix = new char[n][n];
 
     for (int i = 0; i < n; i++) {
-      matrix[i] = new StringBuilder();
-      matrix[i].append(sortedArray[i]);
+      matrix[i][n - 1] = sortedArray[i];
     }
 
-    for (int i = 1; i < n; i++) {
-      copyAsColumn(matrix, bwtArray);
-      CustomComparator comparator = new CustomComparator(i + 1);
+    for (int i = n - 2; i >= 0; i--) {
+      copyAsColumn(matrix, bwtArray, i);
+      CustomComparator comparator = new CustomComparator(i, n - i);
       Arrays.sort(matrix, comparator);
     }
 
-    String result = null;
-
-    for (int i = 0; i < n; i++) {
-      if (matrix[i].charAt(n - 1) == END_MARKER) {
-        result = matrix[i].toString();
-      }
-    }
-
-    return result;
+    StringBuilder resultBuilder = new StringBuilder();
+    resultBuilder.append(String.valueOf(matrix[0], 1, n - 1)).append(END_MARKER);
+    return resultBuilder.toString();
   }
 
-  private void copyAsColumn(StringBuilder[] matrix, char[] bwtArray) {
-    for (int i = 0; i < bwtArray.length; i++) {
-      matrix[i].insert(0, bwtArray[i]);
+  private void copyAsColumn(char[][] matrix, char[] bwtArray, int col) {    
+    for (int k = 0; k < bwtArray.length; k++) {
+      matrix[k][col] = bwtArray[k];
     }
   }
 
@@ -73,19 +66,28 @@ public class InverseBWT {
     System.out.println(inverseBWT(bwt));
   }
 
-  private static class CustomComparator implements Comparator<StringBuilder> {
-    private final int sequenceLength;
+  private static class CustomComparator implements Comparator<char[]> {
+    private final int startIndex;
+    private final int count;
 
-    public CustomComparator(int sequenceLength) {
-      this.sequenceLength = sequenceLength;
+    public CustomComparator(int startIndex, int count) {
+      this.startIndex = startIndex;
+      this.count = count;
     }
 
     @Override
-    public int compare(StringBuilder sb1, StringBuilder sb2) {
-      String str1 = sb1.substring(0, sequenceLength);
-      String str2 = sb2.substring(0, sequenceLength);
-
-      return str1.compareTo(str2);
+    public int compare(char[] charArray1, char[] charArray2) {
+      int result = 0;
+      
+      for (int i = 0; i < count; i++) {
+        result = charArray1[startIndex + i] - charArray2[startIndex + i];
+        
+        if (result != 0) {
+          break;
+        }
+      }
+      
+      return result;
     }
   }
 }
