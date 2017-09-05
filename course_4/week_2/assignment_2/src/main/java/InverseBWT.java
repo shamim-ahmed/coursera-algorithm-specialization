@@ -36,14 +36,16 @@ public class InverseBWT {
     char[][] matrix = new char[n][n];
 
     for (int i = 0; i < n; i++) {
-      matrix[i][n - 1] = sortedArray[i];
+      matrix[i][n - 2] = sortedArray[i];
     }
 
-    for (int i = n - 2; i >= 0; i--) {
+    for (int i = n - 3; i >= 0; i--) {
       copyAsColumn(matrix, bwtArray, i);
       CustomComparator comparator = new CustomComparator(i, n - i);
       Arrays.sort(matrix, comparator);
     }
+    
+    copyAsColumn(matrix, bwtArray, n - 1);
 
     StringBuilder resultBuilder = new StringBuilder();
     resultBuilder.append(String.valueOf(matrix[0], 1, n - 1)).append(END_MARKER);
