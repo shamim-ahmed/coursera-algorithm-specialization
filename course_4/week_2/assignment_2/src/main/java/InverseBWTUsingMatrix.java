@@ -3,8 +3,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-// This one is not a very efficient solution
-// I still kept it as it implements some good techniques
+// This one is not a very efficient solution.
+// It computes the full matrix to find the solution.
+// I still kept it as it implements some good techniques.
 public class InverseBWTUsingMatrix {
   private static final char END_MARKER = '$';
 

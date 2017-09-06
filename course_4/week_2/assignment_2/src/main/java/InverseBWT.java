@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class InverseBWT {
-  private static final char END_MARKER = '$';
 
   class FastScanner {
     StringTokenizer tok = new StringTokenizer("");
@@ -37,7 +36,6 @@ public class InverseBWT {
     indexMap.put('T', 4);
 
     // Compute the permutation required to sort the bwt string.
-    // The same permutation can be applied repeatedly.
     int[] permutation = computePermutation(bwtArray, indexMap);
     char[] sortedArray = new char[n];
 
@@ -45,41 +43,20 @@ public class InverseBWT {
       sortedArray[permutation[i]] = bwtArray[i];
     }
 
-    char[][] matrix = new char[n][n];
-
-    // add the sorted column
-    for (int i = 0; i < n; i++) {
-      matrix[i][n - 2] = sortedArray[i];
-    }
-
-    // repeatedly add columns corresponding to the given bwt string
-    // and then sort
-    for (int i = n - 3; i >= 0; i--) {
-      copyAsColumn(matrix, bwtArray, i);
-      char[][] temp = new char[n][];
-
-      // apply the permutation to perform sorting
-      for (int j = 0; j < n; j++) {
-        temp[permutation[j]] = matrix[j];
-      }
-
-      matrix = temp;
-    }
-
-    // the last column is equal to the given bwt string
-    copyAsColumn(matrix, bwtArray, n - 1);
-
-    // format the result
+    // compute the inverse permutation that will allow us to
+    // move between the bwt string and sorted string
+    int[] inversePermutation = computeInversePermutation(permutation);
     StringBuilder resultBuilder = new StringBuilder();
-    resultBuilder.append(String.valueOf(matrix[0], 1, n - 1)).append(END_MARKER);
+
+    int p = 0;
+
+    for (int i = 0; i < n; i++) {
+      int q = inversePermutation[p];
+      resultBuilder.append(sortedArray[q]);
+      p = q;
+    }
 
     return resultBuilder.toString();
-  }
-
-  private void copyAsColumn(char[][] matrix, char[] bwtArray, int col) {
-    for (int k = 0; k < bwtArray.length; k++) {
-      matrix[k][col] = bwtArray[k];
-    }
   }
 
   // Compute the permutation required to sort the given bwt string.
@@ -109,6 +86,17 @@ public class InverseBWT {
     }
 
     return resultArray;
+  }
+
+  // invert a given permutation
+  private int[] computeInversePermutation(int[] permutation) {
+    int[] result = new int[permutation.length];
+
+    for (int i = 0; i < result.length; i++) {
+      result[permutation[i]] = i;
+    }
+
+    return result;
   }
 
   static public void main(String[] args) throws IOException {
