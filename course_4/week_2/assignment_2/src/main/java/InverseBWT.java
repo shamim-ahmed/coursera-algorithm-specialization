@@ -29,10 +29,6 @@ public class InverseBWT {
     final int n = bwt.length();
     char[] bwtArray = bwt.toCharArray();
 
-    char[] sortedArray = new char[n];
-    System.arraycopy(bwtArray, 0, sortedArray, 0, n);
-    Arrays.sort(sortedArray);
-
     Map<Character, Integer> indexMap = new HashMap<>();
     indexMap.put('$', 0);
     indexMap.put('A', 1);
@@ -43,6 +39,12 @@ public class InverseBWT {
     // Compute the permutation required to sort the bwt string.
     // The same permutation can be applied repeatedly.
     int[] permutation = computePermutation(bwtArray, indexMap);
+    char[] sortedArray = new char[n];
+
+    for (int i = 0; i < n; i++) {
+      sortedArray[permutation[i]] = bwtArray[i];
+    }
+
     char[][] matrix = new char[n][n];
 
     // add the sorted column
