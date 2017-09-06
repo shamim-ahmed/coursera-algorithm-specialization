@@ -40,18 +40,23 @@ public class InverseBWT {
     indexMap.put('G', 3);
     indexMap.put('T', 4);
 
+    // Compute the permutation required to sort the bwt string.
+    // The same permutation can be applied repeatedly.
     int[] permutation = computePermutation(bwtArray, indexMap);
-
     char[][] matrix = new char[n][n];
 
+    // add the sorted column
     for (int i = 0; i < n; i++) {
       matrix[i][n - 2] = sortedArray[i];
     }
 
+    // repeatedly add columns corresponding to the given bwt string
+    // and then sort
     for (int i = n - 3; i >= 0; i--) {
       copyAsColumn(matrix, bwtArray, i);
       char[][] temp = new char[n][];
 
+      // apply the permutation to perform sorting
       for (int j = 0; j < n; j++) {
         temp[permutation[j]] = matrix[j];
       }
@@ -59,10 +64,13 @@ public class InverseBWT {
       matrix = temp;
     }
 
+    // the last column is equal to the given bwt string
     copyAsColumn(matrix, bwtArray, n - 1);
 
+    // format the result
     StringBuilder resultBuilder = new StringBuilder();
     resultBuilder.append(String.valueOf(matrix[0], 1, n - 1)).append(END_MARKER);
+
     return resultBuilder.toString();
   }
 
@@ -72,6 +80,8 @@ public class InverseBWT {
     }
   }
 
+  // Compute the permutation required to sort the given bwt string.
+  // This method uses ideas from Counting sort algorithm.
   private int[] computePermutation(char[] bwtArray, Map<Character, Integer> indexMap) {
     int[] countArray = new int[indexMap.size()];
 
