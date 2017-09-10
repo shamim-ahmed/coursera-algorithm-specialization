@@ -34,20 +34,19 @@ public class BWMatching {
   // from position 0 to position P inclusive.
   private void PreprocessBWT(String bwt, Map<Character, Integer> starts,
       Map<Character, int[]> occ_counts_before) {
-    char[] bwtArray = bwt.toCharArray();
-
+    int n = bwt.length();
     char[] symbols = {'$', 'A', 'C', 'G', 'T'};
 
     for (char c : symbols) {
-      occ_counts_before.put(c, new int[bwtArray.length + 1]);
+      occ_counts_before.put(c, new int[n + 1]);
     }
 
     // Compute the permutation required to sort the bwt string.
-    int[] permutation = computePermutation(bwtArray, symbols);
-    char[] sortedArray = new char[bwtArray.length];
+    int[] permutation = computePermutation(bwt, symbols);
+    char[] sortedArray = new char[n];
 
     for (int i = 0; i < sortedArray.length; i++) {
-      sortedArray[permutation[i]] = bwtArray[i];
+      sortedArray[permutation[i]] = bwt.charAt(i);
     }
 
     for (int i = 0; i < sortedArray.length; i++) {
@@ -58,8 +57,8 @@ public class BWMatching {
       }
     }
 
-    for (int i = 0; i < bwtArray.length; i++) {
-      char c = bwtArray[i];
+    for (int i = 0; i < n; i++) {
+      char c = bwt.charAt(i);
 
       for (Map.Entry<Character, int[]> entry : occ_counts_before.entrySet()) {
         char key = entry.getKey();
@@ -85,16 +84,14 @@ public class BWMatching {
   // information we get from the preprocessing stage - starts and occ_counts_before.
   int CountOccurrences(String pattern, String bwt, Map<Character, Integer> starts,
       Map<Character, int[]> occ_counts_before) {
-    char[] bwtArray = bwt.toCharArray();
     int top = 0;
-    int bottom = bwtArray.length - 1;
-    char[] patternArray = pattern.toCharArray();
-    int i = patternArray.length - 1;
+    int bottom = bwt.length() - 1;
+    int i = pattern.length() - 1;
     int result = 0;
 
     while (top <= bottom) {
       if (i >= 0) {
-        char c = patternArray[i];
+        char c = pattern.charAt(i);
         i--;
 
         Integer firstOccurrence = starts.get(c);
@@ -124,7 +121,8 @@ public class BWMatching {
 
   // Compute the permutation required to sort the given bwt string.
   // This method uses ideas from Counting sort algorithm.
-  private int[] computePermutation(char[] bwtArray, char[] symbols) {
+  private int[] computePermutation(String bwt, char[] symbols) {
+    int n = bwt.length();
     Map<Character, Integer> indexMap = new HashMap<>();
 
     for (int i = 0; i < symbols.length; i++) {
@@ -133,8 +131,9 @@ public class BWMatching {
 
     int[] countArray = new int[symbols.length];
 
-    for (int i = 0; i < bwtArray.length; i++) {
-      int k = indexMap.get(bwtArray[i]);
+    for (int i = 0; i < n; i++) {
+      char c = bwt.charAt(i);
+      int k = indexMap.get(c);
       countArray[k]++;
     }
 
@@ -146,10 +145,11 @@ public class BWMatching {
       sum += countArray[i];
     }
 
-    int[] resultArray = new int[bwtArray.length];
+    int[] resultArray = new int[n];
 
-    for (int i = 0; i < bwtArray.length; i++) {
-      int k = indexMap.get(bwtArray[i]);
+    for (int i = 0; i < resultArray.length; i++) {
+      char c = bwt.charAt(i);
+      int k = indexMap.get(c);
       resultArray[i] = positionArray[k];
       positionArray[k]++;
     }
