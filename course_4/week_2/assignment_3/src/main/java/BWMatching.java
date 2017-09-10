@@ -97,10 +97,16 @@ public class BWMatching {
         char c = patternArray[i];
         i--;
 
-        if (isPresent(bwtArray, c, top, bottom)) {
-          int firstOccurrence = starts.get(c);
-          int[] occurrenceCounts = occ_counts_before.get(c);
+        Integer firstOccurrence = starts.get(c);
+        
+        if (firstOccurrence == null) {
+          result = 0;
+          break;
+        }
+        
+        int[] occurrenceCounts = occ_counts_before.get(c);
 
+        if (occurrenceCounts[bottom + 1] - occurrenceCounts[top] >= 1) {
           top = firstOccurrence + occurrenceCounts[top];
           bottom = firstOccurrence + occurrenceCounts[bottom + 1] - 1;
         } else {
@@ -109,19 +115,6 @@ public class BWMatching {
         }
       } else {
         result = bottom - top + 1;
-        break;
-      }
-    }
-
-    return result;
-  }
-
-  private boolean isPresent(char[] bwtArray, char c, int top, int bottom) {
-    boolean result = false;
-
-    for (int i = top; i <= bottom; i++) {
-      if (c == bwtArray[i]) {
-        result = true;
         break;
       }
     }
