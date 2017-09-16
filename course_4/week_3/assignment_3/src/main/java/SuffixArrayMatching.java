@@ -8,8 +8,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class SuffixArrayMatching {
-  private static final int INVALID_INDEX = -1;
-
+  
   class fastscanner {
     StringTokenizer tok = new StringTokenizer("");
     BufferedReader in;
@@ -147,86 +146,51 @@ public class SuffixArrayMatching {
   }
 
   public List<Integer> findOccurrences(String pattern, String text, int[] suffixArray) {
-    List<Integer> resultList = new ArrayList<>();
-
-    // all these indices point to the suffix array
+    int n = text.length();
+    
+    // compute start index
     int low = 0;
-    int high = suffixArray.length - 1;
-    int suffixIndex = INVALID_INDEX;
-
-    while (low <= high) {
+    int high = n;
+    
+    while (low < high) {
       int mid = (low + high) / 2;
-      int textIndex = suffixArray[mid];
-      int r = matches(text, textIndex, pattern);
-
-      if (r == 0) {
-        suffixIndex = mid;
-        break;
+      int r = checkForMatch(text, suffixArray[mid], pattern);
+      
+      if (r > 0) {
+        low = mid + 1;
       } else {
-        if (r < 0) {
-          // search in the upper interval of suffix array
-          low = mid + 1;
-        } else {
-          // search in the lower interval of suffix array
-          high = mid - 1;
-        }
+        high = mid;
       }
     }
+    
+    int start = low;
+    
+    // compute end index
+    high = n;
+    
+    while (low < high) {
+      int mid = (low + high) / 2;
+      int r = checkForMatch(text, suffixArray[mid], pattern);
+      
+      if (r < 0) {
+        high = mid;
+      } else {
+        low = mid + 1;
+      }
+    }
+    
+    int end = high;
+    
+    List<Integer> resultList = new ArrayList<>();
 
-    if (suffixIndex != INVALID_INDEX) {
-      resultList.add(suffixArray[suffixIndex]);
-
-      // search the upper interval of suffix array for possible matches
-      searchUpperInterval(suffixArray, suffixIndex, text, pattern, resultList);
-      // search the lower interval of suffix array for possible matches
-      searchLowerInterval(suffixArray, suffixIndex, text, pattern, resultList);
+    for (int i = start; i < end; i++) {
+      resultList.add(suffixArray[i]);
     }
 
     return resultList;
   }
 
-  private void searchLowerInterval(int[] suffixArray, int suffixIndex, String text, String pattern,
-      List<Integer> resultList) {
-    int k = suffixIndex - 1;
-    while (k >= 0) {
-      int r = matches(text, suffixArray[k], pattern);
-
-      if (r != 0) {
-        break;
-      }
-
-      resultList.add(suffixArray[k]);
-      k--;
-    }
-  }
-
-  private void searchUpperInterval(int[] suffixArray, int suffixIndex, String text, String pattern,
-      List<Integer> resultList) {
-    int k = suffixIndex + 1;
-
-    while (k < suffixArray.length) {
-      int res = matches(text, suffixArray[k], pattern);
-
-      if (res != 0) {
-        break;
-      }
-
-      resultList.add(suffixArray[k]);
-      k++;
-    }
-  }
-
-  /**
-   * check if there is an occurrence of pattern in text starting at position startIndex
-   * 
-   * @param text
-   * @param startIndex
-   * @param pattern
-   * @return the value 0 if an occurrence of pattern has been found in text starting at startIndex;
-   *         the value -1 if the suffix of text starting at startIndex is less than the pattern; 
-   *         the value 1 if the suffix of text starting at startIndex is greater than pattern
-   */
-  private int matches(String text, int startIndex, String pattern) {
+  private int checkForMatch(String text, int startIndex, String pattern) {
     int patternLength = pattern.length();
     int result = 0;
 
@@ -234,8 +198,8 @@ public class SuffixArrayMatching {
     // so we will always find a result through character comparison
     // we need not check whether (startIndex + j) is beyond the end of the text
     for (int j = 0; j < patternLength; j++) {
-      char c1 = text.charAt(startIndex + j);
-      char c2 = pattern.charAt(j);
+      char c1 = pattern.charAt(j);
+      char c2 = text.charAt(startIndex + j);
 
       if (c1 != c2) {
         if (c1 < c2) {
