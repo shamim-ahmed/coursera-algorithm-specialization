@@ -40,9 +40,14 @@ public class SuffixArrayLong {
     int len = 1;
 
     while (len < n) {
-      orderArray = sortDoubled(text, orderArray, classArray, len);
-      classArray = updateClasses(text, orderArray, classArray, len);
+      // compute new order and class array
+      int[] newOrderArray = sortDoubled(text, orderArray, classArray, len);
+      int[] newClassArray = updateClasses(text, newOrderArray, classArray, len);
+      
+      // update for next iteration
       len = 2 * len;
+      orderArray = newOrderArray;
+      classArray = newClassArray;
     }
 
     return orderArray;
