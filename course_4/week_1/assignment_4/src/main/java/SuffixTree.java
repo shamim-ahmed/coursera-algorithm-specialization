@@ -35,7 +35,7 @@ public class SuffixTree {
       this.children = new LinkedHashMap<>();
       this.stringDepth = stringDepth;
       this.edgeStart = edgeStart;
-      this.edgeEnd = edgeEnd;     
+      this.edgeEnd = edgeEnd;
     }
   }
 
@@ -67,7 +67,7 @@ public class SuffixTree {
         SuffixTreeNode midNode = breakEdge(currentNode, text, edgeStart, offset);
         currentNode = createNewLeaf(midNode, text, suffix);
       }
-      
+
       if (i < n - 1) {
         lcpPrev = lcpArray[i];
       }
@@ -76,38 +76,38 @@ public class SuffixTree {
     List<String> resultList = findEdgeLabels(root, text);
     return resultList;
   }
-  
+
   private List<String> findEdgeLabels(SuffixTreeNode root, String text) {
     List<String> resultList = new ArrayList<>();
     Stack<SuffixTreeNode> stack = new Stack<>();
     stack.push(root);
-    
+
     while (!stack.isEmpty()) {
       SuffixTreeNode node = stack.pop();
       String edgeLabel = findEdgeLabel(node, text);
-      
+
       if (edgeLabel != null) {
         resultList.add(edgeLabel);
       }
-      
+
       List<SuffixTreeNode> childNodes = new ArrayList<>(node.children.values());
-    
+
       for (int i = childNodes.size() - 1; i >= 0; i--) {
         stack.push(childNodes.get(i));
       }
     }
-    
+
     return resultList;
   }
-  
+
   private String findEdgeLabel(SuffixTreeNode node, String text) {
     int start = node.edgeStart;
     int end = node.edgeEnd;
-    
+
     if (start == INVALID_INDEX || end == INVALID_INDEX) {
       return null;
     }
-    
+
     return text.substring(start, end + 1);
   }
 
@@ -125,17 +125,17 @@ public class SuffixTree {
     char midChar = text.charAt(start + offset);
     SuffixTreeNode midNode = new SuffixTreeNode(currentNode, currentNode.stringDepth + offset,
         start, start + offset - 1);
-    
+
     SuffixTreeNode oldChildNode = currentNode.children.get(startChar);
     midNode.children.put(midChar, oldChildNode);
     oldChildNode.parent = midNode;
     oldChildNode.edgeStart = start + offset;
-    
+
     if (oldChildNode.edgeStart > oldChildNode.edgeEnd) {
       oldChildNode.edgeEnd = oldChildNode.edgeStart;
     }
     currentNode.children.put(startChar, midNode);
-    
+
     return midNode;
   }
 
