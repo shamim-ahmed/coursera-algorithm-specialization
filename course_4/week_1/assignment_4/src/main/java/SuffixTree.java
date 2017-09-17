@@ -108,15 +108,7 @@ public class SuffixTree {
       return null;
     }
     
-    String result;
-    
-    if (start >= end) {
-      result = Character.toString(text.charAt(start));
-    } else {
-      result = text.substring(start, end + 1);
-    }
-    
-    return result;
+    return text.substring(start, end + 1);
   }
 
   private SuffixTreeNode createNewLeaf(SuffixTreeNode currentNode, String text, int suffix) {
@@ -138,6 +130,10 @@ public class SuffixTree {
     midNode.children.put(midChar, oldChildNode);
     oldChildNode.parent = midNode;
     oldChildNode.edgeStart = start + offset;
+    
+    if (oldChildNode.edgeStart > oldChildNode.edgeEnd) {
+      oldChildNode.edgeEnd = oldChildNode.edgeStart;
+    }
     currentNode.children.put(startChar, midNode);
     
     return midNode;
