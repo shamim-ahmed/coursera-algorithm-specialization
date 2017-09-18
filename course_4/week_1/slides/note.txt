@@ -1,0 +1,5 @@
+A nice tool for generating suffix tree:
+
+https://visualgo.net/en/suffixtree
+
+This is quite handy for debugging.
