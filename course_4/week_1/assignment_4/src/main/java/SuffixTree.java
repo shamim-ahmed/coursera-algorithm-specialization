@@ -2,9 +2,9 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Note: this solution was not accepted
- * It worked for all example inputs, but fails for larger inputs
- * I kept it here for future reference 
+ * Note: this solution was not accepted It worked for all example inputs, but fails for larger
+ * inputs I kept it here for future reference
+ * 
  * @author shamim
  *
  */
@@ -91,7 +91,7 @@ public class SuffixTree {
 
     while (!stack.isEmpty()) {
       SuffixTreeNode node = stack.pop();
-      String edgeLabel = findEdgeLabel(node, text);
+      String edgeLabel = findLabel(node, text);
 
       if (edgeLabel != null) {
         resultList.add(edgeLabel);
@@ -107,7 +107,7 @@ public class SuffixTree {
     return resultList;
   }
 
-  private String findEdgeLabel(SuffixTreeNode node, String text) {
+  private String findLabel(SuffixTreeNode node, String text) {
     int start = node.edgeStart;
     int end = node.edgeEnd;
 
@@ -136,11 +136,8 @@ public class SuffixTree {
     SuffixTreeNode oldChildNode = currentNode.children.get(startChar);
     midNode.children.put(midChar, oldChildNode);
     oldChildNode.parent = midNode;
-    oldChildNode.edgeStart = start + offset;
+    oldChildNode.edgeStart += offset;
 
-    if (oldChildNode.edgeStart > oldChildNode.edgeEnd) {
-      oldChildNode.edgeEnd = oldChildNode.edgeStart;
-    }
     currentNode.children.put(startChar, midNode);
 
     return midNode;
