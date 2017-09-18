@@ -1,13 +1,6 @@
 import java.util.*;
 import java.io.*;
 
-/**
- * Note: this solution was not accepted It worked for all example inputs, but fails for larger
- * inputs I kept it here for future reference
- * 
- * @author shamim
- *
- */
 public class SuffixTree {
   private static final int INVALID_INDEX = -1;
 
