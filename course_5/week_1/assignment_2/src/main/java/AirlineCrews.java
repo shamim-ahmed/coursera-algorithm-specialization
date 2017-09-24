@@ -68,16 +68,16 @@ public class AirlineCrews {
     int[] result = new int[n];
     Arrays.fill(result, INVALID_VERTEX_ID);
 
-    for (int edgeId : flowGraph.getIds(0)) {
-      Edge edge = flowGraph.getEdge(edgeId);
-
-      if (edge.flow == 0) {
-        continue;
-      }
-
-      int u = edge.to;
-      int v = findMatchingVertex(u, flowGraph, n);
-      result[u - 1] = v;
+    for (int i = 1; i <= n; i++) {
+      List<Integer> edgeIdList = flowGraph.getIds(i);
+      
+      for (int edgeId : edgeIdList) {
+        Edge edge = flowGraph.getEdge(edgeId);
+        
+        if (edge.flow == CAPACITY) {
+          result[i - 1] = edge.to - n - 1;
+        }
+      }      
     }
 
     return result;
@@ -184,23 +184,6 @@ public class AirlineCrews {
     }
 
     return flowGraph;
-  }
-
-  // Given a vertex u in the left set, find the matching vertex in the right set
-  private int findMatchingVertex(int u, FlowGraph flowGraph, int n) {
-    int v = INVALID_VERTEX_ID;
-
-    for (int edgeId : flowGraph.getIds(u)) {
-      Edge edge = flowGraph.getEdge(edgeId);
-
-      if (edge.flow == CAPACITY) {
-        // we need this transformation because of the way we number the vertices
-        v = edge.to - n - 1;
-        break;
-      }
-    }
-
-    return v;
   }
 
   private void writeResponse(int[] matching) {
