@@ -58,9 +58,10 @@ public class AirlineCrews {
       }
     }
 
-    int[] result = new int[bipartiteGraph.length];
+    int n = bipartiteGraph.length;
+    int[] result = new int[n];
 
-    for (int edgeId : flowGraph.graph[0]) {
+    for (int edgeId : flowGraph.getIds(0)) {
       Edge edge = flowGraph.getEdge(edgeId);
 
       if (edge.flow == 0) {
@@ -68,8 +69,8 @@ public class AirlineCrews {
       }
 
       int u = edge.to;
-      int v = findMatchingVertex(u, flowGraph);
-      result[u] = v;
+      int v = findMatchingVertex(u, flowGraph, n);
+      result[u -1] = v;
     }
 
     return result;
@@ -85,7 +86,7 @@ public class AirlineCrews {
 
     while (!queue.isEmpty() && !pathFound) {
       int vertexId = queue.poll();
-      List<Integer> edgeIdList = flowGraph.graph[vertexId];
+      List<Integer> edgeIdList = flowGraph.getIds(vertexId);
 
       for (int edgeId : edgeIdList) {
         Edge edge = flowGraph.getEdge(edgeId);
@@ -169,18 +170,18 @@ public class AirlineCrews {
     return flowGraph;
   }
 
-  private int findMatchingVertex(int u, FlowGraph flowGraph) {
+  private int findMatchingVertex(int u, FlowGraph flowGraph, int n) {
     int v = INVALID_VERTEX_ID;
 
-    for (int edgeId : flowGraph.graph[u]) {
+    for (int edgeId : flowGraph.getIds(u)) {
       Edge edge = flowGraph.getEdge(edgeId);
       
       if (edge.flow == 1) {
-        v = edge.to;
+        v = edge.to - n - 1;
         break;
       }
     }
-
+    
     return v;
   }
 
