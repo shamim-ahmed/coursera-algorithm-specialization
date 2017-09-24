@@ -41,7 +41,7 @@ public class AirlineCrews {
   }
 
   private int[] findMatching(boolean[][] bipartiteGraph) {
-    FlowGraph flowGraph = computeFlowGraph(bipartiteGraph);
+    FlowGraph flowGraph = constructFlowGraph(bipartiteGraph);
     boolean done = false;
 
     while (!done) {
@@ -141,7 +141,7 @@ public class AirlineCrews {
     return minFlow;
   }
 
-  private static FlowGraph computeFlowGraph(boolean[][] bipartiteGraph) {
+  private static FlowGraph constructFlowGraph(boolean[][] bipartiteGraph) {
     int n = bipartiteGraph.length;
     int m = bipartiteGraph[0].length;
     // flowGraph has two extra vertices for source and sink
@@ -150,6 +150,15 @@ public class AirlineCrews {
     // add edges from source to left set, each with capacity 1
     for (int i = 0; i < n; i++) {
       flowGraph.addEdge(0, i + 1, 1);
+    }
+    
+    // add edges between the left and right set
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < m; j++) {
+        if (bipartiteGraph[i][j]) {
+          flowGraph.addEdge(i + 1, n + 1 + j, 1);
+        }
+      }
     }
 
     // add edges from the right set to sink, each with capacity 1
