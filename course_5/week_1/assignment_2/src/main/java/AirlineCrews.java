@@ -60,6 +60,7 @@ public class AirlineCrews {
 
     int n = bipartiteGraph.length;
     int[] result = new int[n];
+    Arrays.fill(result, INVALID_VERTEX_ID);
 
     for (int edgeId : flowGraph.getIds(0)) {
       Edge edge = flowGraph.getEdge(edgeId);
@@ -70,7 +71,7 @@ public class AirlineCrews {
 
       int u = edge.to;
       int v = findMatchingVertex(u, flowGraph, n);
-      result[u -1] = v;
+      result[u - 1] = v;
     }
 
     return result;
@@ -152,7 +153,7 @@ public class AirlineCrews {
     for (int i = 0; i < n; i++) {
       flowGraph.addEdge(0, i + 1, 1);
     }
-    
+
     // add edges between the left and right set
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < m; j++) {
@@ -175,13 +176,13 @@ public class AirlineCrews {
 
     for (int edgeId : flowGraph.getIds(u)) {
       Edge edge = flowGraph.getEdge(edgeId);
-      
+
       if (edge.flow == 1) {
         v = edge.to - n - 1;
         break;
       }
     }
-    
+
     return v;
   }
 
