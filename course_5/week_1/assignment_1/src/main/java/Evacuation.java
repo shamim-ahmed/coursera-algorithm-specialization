@@ -40,7 +40,7 @@ public class Evacuation {
     // find the value of maximum flow from the output flow of the source
     int result = 0;
 
-    for (int edgeId : flowGraph.graph[fromVertex]) {
+    for (int edgeId : flowGraph.getIds(fromVertex)) {
       Edge edge = flowGraph.getEdge(edgeId);
       result += edge.flow;
     }
