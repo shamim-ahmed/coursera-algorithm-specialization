@@ -25,9 +25,12 @@ public class Evacuation {
       count++;
       List<Integer> path = findMinPath(flowGraph, fromVertex, toVertex);
 
+      // if no path can be found, then we are done
       if (path.size() == 0) {
         done = true;
       } else {
+        // find the minimum flow along the path found
+        // and add it to every edge in path
         int f = findMinFlow(flowGraph, path);
 
         for (Integer edgeId : path) {
@@ -36,7 +39,7 @@ public class Evacuation {
       }
     }
 
-    // find the value of maximum flow
+    // find the value of maximum flow from the output flow of the source
     int result = 0;
 
     for (int edgeId : flowGraph.graph[fromVertex]) {
@@ -47,7 +50,9 @@ public class Evacuation {
     return result;
   }
 
+  // find a minimum path (in terms of number of edges) from the source to the sink
   private static List<Integer> findMinPath(FlowGraph flowGraph, int fromVertex, int toVertex) {
+    // an array to store the id of incoming edge for each vertex
     int[] incomingEdgeIds = new int[flowGraph.size()];
 
     for (int i = 0; i < incomingEdgeIds.length; i++) {
@@ -86,6 +91,7 @@ public class Evacuation {
       return Collections.emptyList();
     }
 
+    // trace the path from sink to source, and save the edge ids
     List<Integer> resultList = new ArrayList<>();
     int prevEdgeId = incomingEdgeIds[toVertex];
     resultList.add(prevEdgeId);
@@ -101,6 +107,7 @@ public class Evacuation {
     return resultList;
   }
 
+  // find the value of the minimum flow along the given path
   private static int findMinFlow(FlowGraph flowGraph, List<Integer> path) {
     int minFlow = Integer.MAX_VALUE;
 
