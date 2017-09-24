@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 public class AirlineCrews {
   private static final int INVALID_VERTEX_ID = -1;
   private static final int INVALID_EDGE_ID = -1;
+  private static final int CAPACITY = 1;
   private FastScanner in;
   private PrintWriter out;
 
@@ -41,11 +42,13 @@ public class AirlineCrews {
   }
 
   private int[] findMatching(boolean[][] bipartiteGraph) {
+    // construct the flow graph from the given info on bipartite graph
     FlowGraph flowGraph = constructFlowGraph(bipartiteGraph);
     boolean done = false;
 
+    // find the maximum flow from the source to the sink
     while (!done) {
-      List<Integer> path = findMinPath(flowGraph, 0, flowGraph.size() - 1);
+      List<Integer> path = findMinimumPath(flowGraph, 0, flowGraph.size() - 1);
 
       if (path.size() == 0) {
         done = true;
@@ -58,6 +61,9 @@ public class AirlineCrews {
       }
     }
 
+    // We have computed the maximum flow.
+    // Now find the edges in the flow that match a vertex in the left set with a vertex in the
+    // right set.
     int n = bipartiteGraph.length;
     int[] result = new int[n];
     Arrays.fill(result, INVALID_VERTEX_ID);
@@ -77,7 +83,9 @@ public class AirlineCrews {
     return result;
   }
 
-  private List<Integer> findMinPath(FlowGraph flowGraph, int fromVertex, int toVertex) {
+  // For the given flow graph, find the minimum path in terms of the number of edges.
+  // We use breadth first search to find the minimum path.
+  private List<Integer> findMinimumPath(FlowGraph flowGraph, int fromVertex, int toVertex) {
     int[] incomingEdgeIds = new int[flowGraph.size()];
     Arrays.fill(incomingEdgeIds, INVALID_EDGE_ID);
 
@@ -89,6 +97,7 @@ public class AirlineCrews {
       int vertexId = queue.poll();
       List<Integer> edgeIdList = flowGraph.getIds(vertexId);
 
+      // consider the outgoing edges for the current vertex
       for (int edgeId : edgeIdList) {
         Edge edge = flowGraph.getEdge(edgeId);
 
@@ -101,6 +110,7 @@ public class AirlineCrews {
           incomingEdgeIds[edge.to] = edgeId;
           queue.offer(edge.to);
 
+          // check if we have reached the sink
           if (edge.to == toVertex) {
             pathFound = true;
             break;
@@ -109,10 +119,12 @@ public class AirlineCrews {
       }
     }
 
+    // if a path is not found, return an empty list
     if (!pathFound) {
       return Collections.emptyList();
     }
 
+    // find the list of edge ids for the minimum path
     List<Integer> path = new ArrayList<>();
     int prevEdgeId = incomingEdgeIds[toVertex];
     path.add(prevEdgeId);
@@ -128,6 +140,7 @@ public class AirlineCrews {
     return path;
   }
 
+  // find the minimum flow value for a given path
   private int findMinFlow(List<Integer> path, FlowGraph flowGraph) {
     int minFlow = Integer.MAX_VALUE;
 
@@ -143,41 +156,45 @@ public class AirlineCrews {
     return minFlow;
   }
 
+  // Construct the flow graph from the information given on the bipartite graph.
+  // Note that we need to add a source, a sink and the associated edges.
   private static FlowGraph constructFlowGraph(boolean[][] bipartiteGraph) {
     int n = bipartiteGraph.length;
     int m = bipartiteGraph[0].length;
     // flowGraph has two extra vertices for source and sink
     FlowGraph flowGraph = new FlowGraph(n + m + 2);
 
-    // add edges from source to left set, each with capacity 1
+    // add edges from source to left vertex set, each with capacity 1
     for (int i = 0; i < n; i++) {
-      flowGraph.addEdge(0, i + 1, 1);
+      flowGraph.addEdge(0, i + 1, CAPACITY);
     }
 
-    // add edges between the left and right set
+    // add edges between the left and right vertex set, each with capacity 1
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < m; j++) {
         if (bipartiteGraph[i][j]) {
-          flowGraph.addEdge(i + 1, n + 1 + j, 1);
+          flowGraph.addEdge(i + 1, n + 1 + j, CAPACITY);
         }
       }
     }
 
-    // add edges from the right set to sink, each with capacity 1
+    // add edges from the right vertex set to the sink, each with capacity 1
     for (int i = 0; i < m; i++) {
-      flowGraph.addEdge(n + 1 + i, n + m + 1, 1);
+      flowGraph.addEdge(n + 1 + i, n + m + 1, CAPACITY);
     }
 
     return flowGraph;
   }
 
+  // Given a vertex u in the left set, find the matching vertex in the right set
   private int findMatchingVertex(int u, FlowGraph flowGraph, int n) {
     int v = INVALID_VERTEX_ID;
 
     for (int edgeId : flowGraph.getIds(u)) {
       Edge edge = flowGraph.getEdge(edgeId);
 
-      if (edge.flow == 1) {
+      if (edge.flow == CAPACITY) {
+        // we need this transformation because of the way we number the vertices
         v = edge.to - n - 1;
         break;
       }

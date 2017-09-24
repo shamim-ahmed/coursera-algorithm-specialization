@@ -21,7 +21,7 @@ public class Evacuation {
     boolean done = false;
 
     while (!done) {
-      List<Integer> path = findMinPath(flowGraph, fromVertex, toVertex);
+      List<Integer> path = findMinimumPath(flowGraph, fromVertex, toVertex);
 
       // if no path can be found, then we are done
       if (path.size() == 0) {
@@ -50,7 +50,7 @@ public class Evacuation {
 
   // Find a minimum path (in terms of number of edges) from the source to the sink.
   // We are using breadth-first search for this purpose.
-  private static List<Integer> findMinPath(FlowGraph flowGraph, int fromVertex, int toVertex) {
+  private static List<Integer> findMinimumPath(FlowGraph flowGraph, int fromVertex, int toVertex) {
     // an array to store the id of incoming edge for each vertex
     int[] incomingEdgeIds = new int[flowGraph.size()];
 
