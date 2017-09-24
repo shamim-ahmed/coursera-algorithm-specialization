@@ -1,10 +1,13 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.StringTokenizer;
-import java.util.Arrays;
 
 public class Evacuation {
+  private static final int INVALID_EDGE_ID = -1;
   private static FastScanner in;
 
   public static void main(String[] args) throws IOException {
@@ -14,10 +17,103 @@ public class Evacuation {
     System.out.println(maxFlow(graph, 0, graph.size() - 1));
   }
 
-  private static int maxFlow(FlowGraph graph, int from, int to) {
-    int flow = 0;
-    /* your code goes here */
-    return flow;
+  private static int maxFlow(FlowGraph flowGraph, int fromVertex, int toVertex) {
+    boolean done = false;
+    int count = 0;
+
+    while (!done && count < 3) {
+      count++;
+      List<Integer> path = findMinPath(flowGraph, fromVertex, toVertex);
+
+      if (path.size() == 0) {
+        done = true;
+      } else {
+        int f = findMinFlow(flowGraph, path);
+
+        for (Integer edgeId : path) {
+          flowGraph.addFlow(edgeId, f);
+        }
+      }
+    }
+
+    // find the value of maximum flow
+    int result = 0;
+
+    for (int edgeId : flowGraph.graph[fromVertex]) {
+      Edge edge = flowGraph.getEdge(edgeId);
+      result += edge.flow;
+    }
+
+    return result;
+  }
+
+  private static List<Integer> findMinPath(FlowGraph flowGraph, int fromVertex, int toVertex) {
+    int[] incomingEdgeIds = new int[flowGraph.size()];
+
+    for (int i = 0; i < incomingEdgeIds.length; i++) {
+      incomingEdgeIds[i] = INVALID_EDGE_ID;
+    }
+
+    Queue<Integer> queue = new LinkedList<>();
+    queue.offer(fromVertex);
+    boolean pathFound = false;
+
+    while (!queue.isEmpty() && !pathFound) {
+      int vertexId = queue.poll();
+      List<Integer> edgeIdList = flowGraph.getIds(vertexId);
+
+      for (int edgeId : edgeIdList) {
+        Edge edge = flowGraph.getEdge(edgeId);
+
+        // check for loops
+        if (edge.from == edge.to) {
+          continue;
+        }
+
+        if (edge.flow < edge.capacity && incomingEdgeIds[edge.to] == INVALID_EDGE_ID) {
+          incomingEdgeIds[edge.to] = edgeId;
+          queue.offer(edge.to);
+
+          if (edge.to == toVertex) {
+            pathFound = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!pathFound) {
+      return Collections.emptyList();
+    }
+
+    List<Integer> resultList = new ArrayList<>();
+    int prevEdgeId = incomingEdgeIds[toVertex];
+    resultList.add(prevEdgeId);
+    Edge prevEdge = flowGraph.getEdge(prevEdgeId);
+
+    while (prevEdge.from != fromVertex) {
+      prevEdgeId = incomingEdgeIds[prevEdge.from];
+      resultList.add(prevEdgeId);
+      prevEdge = flowGraph.getEdge(prevEdgeId);
+    }
+
+    Collections.reverse(resultList);
+    return resultList;
+  }
+
+  private static int findMinFlow(FlowGraph flowGraph, List<Integer> path) {
+    int minFlow = Integer.MAX_VALUE;
+
+    for (Integer edgeId : path) {
+      Edge edge = flowGraph.getEdge(edgeId);
+      int f = edge.capacity - edge.flow;
+
+      if (f < minFlow) {
+        minFlow = f;
+      }
+    }
+
+    return minFlow;
   }
 
   static FlowGraph readGraph() throws IOException {
@@ -54,10 +150,14 @@ public class Evacuation {
     /* These adjacency lists store only indices of edges from the edges list */
     private List<Integer>[] graph;
 
+    @SuppressWarnings("unchecked")
     public FlowGraph(int n) {
       this.graph = (ArrayList<Integer>[]) new ArrayList[n];
-      for (int i = 0; i < n; ++i)
+
+      for (int i = 0; i < n; ++i) {
         this.graph[i] = new ArrayList<>();
+      }
+
       this.edges = new ArrayList<>();
     }
 
