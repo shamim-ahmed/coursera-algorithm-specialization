@@ -19,10 +19,8 @@ public class Evacuation {
 
   private static int maxFlow(FlowGraph flowGraph, int fromVertex, int toVertex) {
     boolean done = false;
-    int count = 0;
 
-    while (!done && count < 3) {
-      count++;
+    while (!done) {
       List<Integer> path = findMinPath(flowGraph, fromVertex, toVertex);
 
       // if no path can be found, then we are done
