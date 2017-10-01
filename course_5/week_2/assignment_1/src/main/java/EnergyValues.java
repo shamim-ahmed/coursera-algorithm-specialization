@@ -13,13 +13,13 @@ class Equation {
 
 
 class Position {
-  Position(int column, int row) {
-    this.column = column;
+  Position(int row, int column) {
     this.row = row;
+    this.column = column;
   }
 
-  int column;
   int row;
+  int column;
 }
 
 
@@ -50,7 +50,7 @@ class EnergyValues {
     
     for (int i = step + 1; i < size; i++) {
       if (Math.abs(a[i][step]) > Math.abs(a[maxRow][step])) {
-        maxRow = step;
+        maxRow = i;
       }
     }
     
