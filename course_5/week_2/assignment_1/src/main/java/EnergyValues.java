@@ -43,8 +43,6 @@ class EnergyValues {
   }
 
   static Position SelectPivotElement(double a[][], int step) {
-    // This algorithm selects the first free element.
-    // You'll need to improve it to pass the problem.
     int size = a.length;
     int maxRow = step;
     
