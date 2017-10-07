@@ -36,6 +36,9 @@ public class GSMNetwork {
       }
     }
 
+    // Imagine a matrix of dimension numberOfColors x numberOfVertices.
+    // Each variable holds one position within that matrix.
+    // Now form clauses that represent a certain constraint to be satisfied.
     void printEquisatisfiableSatFormula() {
       writer.printf("%d %d\n", numberOfVertices + edges.length * numberOfColors,
           numberOfVertices * numberOfColors);
