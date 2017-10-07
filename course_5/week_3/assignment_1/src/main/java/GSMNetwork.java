@@ -1,5 +1,4 @@
 import java.io.*;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
@@ -25,11 +24,12 @@ public class GSMNetwork {
   }
 
   class ConvertGSMNetworkProblemToSat {
-    int numVertices;
+    final int numberOfColors = 3;
+    int numberOfVertices;
     Edge[] edges;
 
     ConvertGSMNetworkProblemToSat(int n, int m) {
-      numVertices = n;
+      numberOfVertices = n;
       edges = new Edge[m];
       for (int i = 0; i < m; ++i) {
         edges[i] = new Edge();
@@ -37,13 +37,41 @@ public class GSMNetwork {
     }
 
     void printEquisatisfiableSatFormula() {
-      // This solution prints a simple satisfiable formula
-      // and passes about half of the tests.
-      // Change this function to solve the problem.
-      writer.printf("3 2\n");
-      writer.printf("1 2 0\n");
-      writer.printf("-1 -2 0\n");
-      writer.printf("1 -2 0\n");
+      writer.printf("%d %d\n", numberOfVertices + edges.length * numberOfColors,
+          numberOfVertices * numberOfColors);
+
+      ensureEachVertexHasOneColor();
+      ensureDifferentColorForAdjacentVertices();
+    }
+
+    void ensureEachVertexHasOneColor() {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      for (int i = 1; i <= numberOfVertices; i++) {
+        for (int j = 0; j < numberOfColors; j++) {
+          resultBuilder.append(i + j * numberOfVertices).append(" ");
+        }
+
+        resultBuilder.append("0\n");
+      }
+
+      writer.printf("%s", resultBuilder.toString());
+    }
+
+    void ensureDifferentColorForAdjacentVertices() {
+      StringBuilder resultBuilder = new StringBuilder();
+
+      for (int i = 0; i < edges.length; i++) {
+        int from = edges[i].from;
+        int to = edges[i].to;
+
+        for (int j = 0; j < numberOfColors; j++) {
+          resultBuilder.append(-from - j * numberOfVertices).append(" ")
+              .append(-to - j * numberOfVertices).append(" 0\n");
+        }
+      }
+
+      writer.printf("%s", resultBuilder.toString());
     }
   }
 
