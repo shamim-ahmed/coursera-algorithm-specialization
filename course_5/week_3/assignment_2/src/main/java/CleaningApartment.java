@@ -37,6 +37,9 @@ public class CleaningApartment {
       }
     }
 
+    // Imagine a matrix of dimension numberOfVertices x numberOfVertices.
+    // The rows correspond to the positions in path and the columns correspond to the vertices.
+    // Now come up with constraints that must be satisfied by any solution.
     void printEquisatisfiableSatFormula() {
       boolean[][] adjacencyMatrix = computeAdjacencyMatrix();
       List<List<Integer>> clauseList = new ArrayList<>();
@@ -46,21 +49,24 @@ public class CleaningApartment {
       addClausesForAdjacencyMatrix(adjacencyMatrix, clauseList);
 
       writer.printf("%d %d\n", clauseList.size(), numberOfVertices * numberOfVertices);
-      
+
       for (List<Integer> clause : clauseList) {
         for (int val : clause) {
           writer.printf("%d ", val);
         }
-        
+
         writer.printf("0\n");
       }
     }
 
+    // Compute the adjacency matrix for the given graph.
+    // Ensure that the matrix is symmetric
     boolean[][] computeAdjacencyMatrix() {
       boolean[][] adjacencyMatrix = new boolean[numberOfVertices][numberOfVertices];
 
       for (Edge edge : edges) {
         adjacencyMatrix[edge.from - 1][edge.to - 1] = true;
+        adjacencyMatrix[edge.to - 1][edge.from - 1] = true;
       }
 
       return adjacencyMatrix;
@@ -88,8 +94,8 @@ public class CleaningApartment {
       }
     }
 
-    // there will be only one position for each vertex
-    // that is, each vertex will appear once and only once in the path
+    // There will be only one position for each vertex.
+    // That is, each vertex will appear once and only once in the path
     void ensureUniquePositionPerVertex(List<List<Integer>> clauseList) {
       for (int i = 1; i <= numberOfVertices; i++) {
         List<Integer> clause1 = new ArrayList<>();
@@ -118,6 +124,8 @@ public class CleaningApartment {
         for (int j = 1; j <= numberOfVertices; j++) {
           if (i != j && adjacencyMatrix[i - 1][j - 1] == false) {
             for (int k = 0; k < numberOfVertices - 1; k++) {
+              // If two vertices are NOT adjacent, then they cannot
+              // occupy consecutive positions in a path
               List<Integer> clause1 = new ArrayList<>();
               clause1.add(-i - k * numberOfVertices);
               clause1.add(-j - (k + 1) * numberOfVertices);
@@ -132,7 +140,6 @@ public class CleaningApartment {
         }
       }
     }
-
   }
 
   public void run() {
