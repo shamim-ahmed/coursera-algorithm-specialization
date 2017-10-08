@@ -122,8 +122,10 @@ public class CleaningApartment {
     // between two vertices
     void addClausesForAdjacencyMatrix(boolean[][] adjacencyMatrix, List<List<Integer>> clauseList) {
       for (int i = 1; i <= numberOfVertices; i++) {
-        for (int j = 1; j <= numberOfVertices; j++) {
-          if (i != j && adjacencyMatrix[i - 1][j - 1] == false) {
+        // As the adjacency matrix is symmetric, checking only half of the entries will suffice.
+        // We can also exclude diagonal entries, as there is no loop in the graph.
+        for (int j = i + 1; j <= numberOfVertices; j++) {
+          if (adjacencyMatrix[i - 1][j - 1] == false) {
             for (int k = 0; k < numberOfVertices - 1; k++) {
               // If two vertices are NOT adjacent, then they cannot
               // occupy consecutive positions in a path
