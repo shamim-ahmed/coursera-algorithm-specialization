@@ -34,10 +34,10 @@ class EnergyValues {
       for (int c = 0; c < size; ++c) {
         a[r][c] = scanner.nextInt();
       }
-      
+
       b[r] = scanner.nextInt();
     }
-    
+
     scanner.close();
     return new Equation(a, b);
   }
@@ -45,13 +45,13 @@ class EnergyValues {
   static Position SelectPivotElement(double a[][], int step) {
     int size = a.length;
     int maxRow = step;
-    
+
     for (int i = step + 1; i < size; i++) {
       if (Math.abs(a[i][step]) > Math.abs(a[maxRow][step])) {
         maxRow = i;
       }
     }
-    
+
     Position pivot_element = new Position(maxRow, step);
     return pivot_element;
   }
@@ -80,15 +80,29 @@ class EnergyValues {
     int size = a.length;
     int pivotRow = pivot_element.row;
     int pivotColumn = pivot_element.column;
-    
-    for (int i = pivot_element.row + 1; i < size; i++) {
-      double factor = a[i][pivotColumn] / a[pivotRow][pivotColumn];
-      b[i] -= b[pivotRow] * factor;
-      
-      for (int j = pivotColumn; j < size; j++) {
-        a[i][j] -= a[pivotRow][j] * factor;
+    double coeff = a[pivotRow][pivotColumn];
+
+    // process all the rows except pivot row
+    for (int i = 0; i < size; i++) {
+      if (i == pivotRow) {
+        continue;
       }
+
+      double multiplyingFactor = a[i][pivotColumn] / coeff;
+
+      for (int j = pivotColumn; j < size; j++) {
+        a[i][j] -= a[pivotRow][j] * multiplyingFactor;
+      }
+
+      b[i] -= b[pivotRow] * multiplyingFactor;
     }
+
+    // now process pivot row
+    for (int j = pivotColumn; j < size; j++) {
+      a[pivotRow][j] /= coeff;
+    }
+
+    b[pivotRow] /= coeff;
   }
 
   static void MarkPivotElementUsed(Position pivot_element, boolean used_raws[],
@@ -104,24 +118,12 @@ class EnergyValues {
 
     boolean[] used_columns = new boolean[size];
     boolean[] used_rows = new boolean[size];
-    
+
     for (int step = 0; step < size; ++step) {
       Position pivot_element = SelectPivotElement(a, step);
       SwapLines(a, b, used_rows, pivot_element);
       ProcessPivotElement(a, b, pivot_element);
       MarkPivotElementUsed(pivot_element, used_rows, used_columns);
-    }
-    
-    for (int i = size - 1; i >= 0; i--) {
-      double cf = a[i][i];
-      
-      if (Double.doubleToLongBits(cf) != 0L) {
-        for (int j = i + 1; j < size; j++) {
-          b[i] -= b[j] * a[i][j];
-        }
-      }
-      
-      b[i] /= cf;
     }
 
     return b;
