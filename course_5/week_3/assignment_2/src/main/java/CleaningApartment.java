@@ -84,11 +84,11 @@ public class CleaningApartment {
 
         clauseList.add(clause1);
 
-        for (int i = 1; i <= numberOfVertices; i++) {
-          for (int j = i + 1; j <= numberOfVertices; j++) {
+        for (int i = 0, m = clause1.size(); i < m - 1; i++) {
+          for (int j = i + 1; j < m; j++) {
             List<Integer> clause2 = new ArrayList<>();
-            clause2.add(-i - k * numberOfVertices);
-            clause2.add(-j - k * numberOfVertices);
+            clause2.add(-clause1.get(i));
+            clause2.add(-clause1.get(j));
             clauseList.add(clause2);
           }
         }
@@ -107,11 +107,11 @@ public class CleaningApartment {
 
         clauseList.add(clause1);
 
-        for (int j = 0; j < numberOfVertices - 1; j++) {
-          for (int k = j + 1; k < numberOfVertices; k++) {
+        for (int j = 0, m = clause1.size(); j < m - 1; j++) {
+          for (int k = j + 1; k < m; k++) {
             List<Integer> clause2 = new ArrayList<>();
-            clause2.add(-i - j * numberOfVertices);
-            clause2.add(-i - k * numberOfVertices);
+            clause2.add(-clause1.get(j));
+            clause2.add(-clause1.get(k));
             clauseList.add(clause2);
           }
         }
