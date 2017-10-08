@@ -24,6 +24,8 @@ class Position {
 
 
 class EnergyValues {
+  private static final double ZERO_CHECK_LIMIT = 0.000001;
+  
   static Equation ReadEquation() throws IOException {
     Scanner scanner = new Scanner(System.in);
     int size = scanner.nextInt();
@@ -81,6 +83,11 @@ class EnergyValues {
     int pivotRow = pivot_element.row;
     int pivotColumn = pivot_element.column;
     double coeff = a[pivotRow][pivotColumn];
+    
+    if (Math.abs(coeff) < ZERO_CHECK_LIMIT) {
+      // The leading coefficient is too close to zero
+      throw new RuntimeException("The leading coefficient is too close to zero");
+    }
 
     // process all the rows except pivot row
     for (int i = 0; i < size; i++) {
