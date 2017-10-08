@@ -38,6 +38,7 @@ public class CleaningApartment {
     }
 
     // Imagine a matrix of dimension numberOfVertices x numberOfVertices.
+    // Each position in the matrix corresponds to a boolean variable.
     // The rows correspond to the positions in path and the columns correspond to the vertices.
     // Now come up with constraints that must be satisfied by any solution.
     void printEquisatisfiableSatFormula() {
