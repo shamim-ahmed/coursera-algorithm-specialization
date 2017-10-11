@@ -25,7 +25,7 @@ class Position {
 
 class EnergyValues {
   private static final double ZERO_CHECK_LIMIT = 0.000001;
-  
+
   static Equation ReadEquation() throws IOException {
     Scanner scanner = new Scanner(System.in);
     int size = scanner.nextInt();
@@ -83,11 +83,18 @@ class EnergyValues {
     int pivotRow = pivot_element.row;
     int pivotColumn = pivot_element.column;
     double coeff = a[pivotRow][pivotColumn];
-    
+
     if (Math.abs(coeff) < ZERO_CHECK_LIMIT) {
       // The leading coefficient is too close to zero
       throw new RuntimeException("The leading coefficient is too close to zero");
     }
+
+    // process pivot row
+    for (int j = pivotColumn; j < size; j++) {
+      a[pivotRow][j] /= coeff;
+    }
+
+    b[pivotRow] /= coeff;
 
     // process all the rows except pivot row
     for (int i = 0; i < size; i++) {
@@ -95,7 +102,7 @@ class EnergyValues {
         continue;
       }
 
-      double multiplyingFactor = a[i][pivotColumn] / coeff;
+      double multiplyingFactor = a[i][pivotColumn];
 
       for (int j = pivotColumn; j < size; j++) {
         a[i][j] -= a[pivotRow][j] * multiplyingFactor;
@@ -103,13 +110,6 @@ class EnergyValues {
 
       b[i] -= b[pivotRow] * multiplyingFactor;
     }
-
-    // now process pivot row
-    for (int j = pivotColumn; j < size; j++) {
-      a[pivotRow][j] /= coeff;
-    }
-
-    b[pivotRow] /= coeff;
   }
 
   static void MarkPivotElementUsed(Position pivot_element, boolean used_raws[],
