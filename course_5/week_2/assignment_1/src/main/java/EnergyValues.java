@@ -1,32 +1,16 @@
 import java.io.IOException;
 import java.util.Scanner;
 
-class Equation {
-  Equation(double a[][], double b[]) {
-    this.a = a;
-    this.b = b;
-  }
-
-  double a[][];
-  double b[];
-}
-
-
-class Position {
-  Position(int row, int column) {
-    this.row = row;
-    this.column = column;
-  }
-
-  int row;
-  int column;
-}
-
-
-class EnergyValues {
+public class EnergyValues {
   private static final double ZERO_CHECK_LIMIT = 0.000001;
 
-  static Equation ReadEquation() throws IOException {
+  public static void main(String[] args) throws IOException {
+    Equation equation = readEquation();
+    double[] solution = solveEquation(equation);
+    printColumn(solution);
+  }
+
+  static Equation readEquation() throws IOException {
     Scanner scanner = new Scanner(System.in);
     int size = scanner.nextInt();
 
@@ -44,107 +28,92 @@ class EnergyValues {
     return new Equation(a, b);
   }
 
-  static Position SelectPivotElement(double a[][], int step) {
+  private static void solveUsingGuassianElimination(double[][] a, double[] b) {
     int size = a.length;
+
+    for (int step = 0; step < size; step++) {
+      // find the row containing pivot element
+      int k = findMaxRow(a, step);
+
+      if (k != step) {
+        swapRows(a, b, step, k);
+      }
+
+      // check if pivot element is too small
+      if (Math.abs(a[step][step]) < ZERO_CHECK_LIMIT) {
+        throw new RuntimeException("Leading coefficient is too small");
+      }
+
+      // normalize the row containing pivot element
+      double coeff = a[step][step];
+
+      for (int j = step; j < size; j++) {
+        a[step][j] /= coeff;
+      }
+
+      b[step] /= coeff;
+
+      // subtract multiples of pivot row from other rows
+      // so that the pivot element is the only non-zero element in its column
+      for (int i = 0; i < size; i++) {
+        if (i == step) {
+          continue;
+        }
+
+        double mf = a[i][step];
+
+        for (int j = step; j < size; j++) {
+          a[i][j] -= a[step][j] * mf;
+        }
+
+        b[i] -= b[step] * mf;
+      }
+    }
+  }
+
+  private static int findMaxRow(double[][] a, int step) {
     int maxRow = step;
 
-    for (int i = step + 1; i < size; i++) {
+    for (int i = step + 1; i < a.length; i++) {
       if (Math.abs(a[i][step]) > Math.abs(a[maxRow][step])) {
         maxRow = i;
       }
     }
 
-    Position pivot_element = new Position(maxRow, step);
-    return pivot_element;
+    return maxRow;
   }
 
-  static void SwapLines(double a[][], double b[], boolean used_raws[], Position pivot_element) {
-    int size = a.length;
+  private static void swapRows(double[][] a, double[] b, int i, int j) {
+    double[] temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
 
-    for (int column = 0; column < size; ++column) {
-      double tmpa = a[pivot_element.column][column];
-      a[pivot_element.column][column] = a[pivot_element.row][column];
-      a[pivot_element.row][column] = tmpa;
-    }
-
-    double tmpb = b[pivot_element.column];
-    b[pivot_element.column] = b[pivot_element.row];
-    b[pivot_element.row] = tmpb;
-
-    boolean tmpu = used_raws[pivot_element.column];
-    used_raws[pivot_element.column] = used_raws[pivot_element.row];
-    used_raws[pivot_element.row] = tmpu;
-
-    pivot_element.row = pivot_element.column;
+    double val = b[i];
+    b[i] = b[j];
+    b[j] = val;
   }
 
-  static void ProcessPivotElement(double a[][], double b[], Position pivot_element) {
-    int size = a.length;
-    int pivotRow = pivot_element.row;
-    int pivotColumn = pivot_element.column;
-    double coeff = a[pivotRow][pivotColumn];
-
-    if (Math.abs(coeff) < ZERO_CHECK_LIMIT) {
-      // The leading coefficient is too close to zero
-      throw new RuntimeException("The leading coefficient is too close to zero");
-    }
-
-    // process pivot row
-    for (int j = pivotColumn; j < size; j++) {
-      a[pivotRow][j] /= coeff;
-    }
-
-    b[pivotRow] /= coeff;
-
-    // process all the rows except pivot row
-    for (int i = 0; i < size; i++) {
-      if (i == pivotRow) {
-        continue;
-      }
-
-      double multiplyingFactor = a[i][pivotColumn];
-
-      for (int j = pivotColumn; j < size; j++) {
-        a[i][j] -= a[pivotRow][j] * multiplyingFactor;
-      }
-
-      b[i] -= b[pivotRow] * multiplyingFactor;
-    }
-  }
-
-  static void MarkPivotElementUsed(Position pivot_element, boolean used_raws[],
-      boolean used_columns[]) {
-    used_raws[pivot_element.row] = true;
-    used_columns[pivot_element.column] = true;
-  }
-
-  static double[] SolveEquation(Equation equation) {
+  private static double[] solveEquation(Equation equation) {
     double a[][] = equation.a;
     double b[] = equation.b;
-    int size = a.length;
 
-    boolean[] used_columns = new boolean[size];
-    boolean[] used_rows = new boolean[size];
-
-    for (int step = 0; step < size; ++step) {
-      Position pivot_element = SelectPivotElement(a, step);
-      SwapLines(a, b, used_rows, pivot_element);
-      ProcessPivotElement(a, b, pivot_element);
-      MarkPivotElementUsed(pivot_element, used_rows, used_columns);
-    }
-
+    solveUsingGuassianElimination(a, b);
     return b;
   }
 
-  static void PrintColumn(double column[]) {
+  private static void printColumn(double column[]) {
     int size = column.length;
     for (int raw = 0; raw < size; ++raw)
       System.out.printf("%.20f\n", column[raw]);
   }
 
-  public static void main(String[] args) throws IOException {
-    Equation equation = ReadEquation();
-    double[] solution = SolveEquation(equation);
-    PrintColumn(solution);
+  private static class Equation {
+    Equation(double a[][], double b[]) {
+      this.a = a;
+      this.b = b;
+    }
+
+    double a[][];
+    double b[];
   }
 }
