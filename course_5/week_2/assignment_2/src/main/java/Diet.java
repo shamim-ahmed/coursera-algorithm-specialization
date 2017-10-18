@@ -3,8 +3,9 @@ import java.util.*;
 
 public class Diet {
 
-  private static final double ZERO_CHECK_LIMIT = 0.000001;
-  private static final double MAX = 1000000000.0;
+  private static final double ZERO_CHECK_LIMIT = 1.0E-6;
+  private static final double BIG_NUMBER = 1.0E9;
+  private static final double THRESHOLD_VALUE = 999_999_990D;
 
   BufferedReader br;
   PrintWriter out;
@@ -63,7 +64,7 @@ public class Diet {
       return -1;
     }
     
-    if (maxValue > 999_999_990D){
+    if (maxValue > THRESHOLD_VALUE){
       return 1;
     }
 
@@ -104,7 +105,7 @@ public class Diet {
       } else if (k == n + m) {
         subsetA[i] = new double[m];
         Arrays.fill(subsetA[i], 1.0);
-        subsetB[i] = MAX;
+        subsetB[i] = BIG_NUMBER;
       } else {
         subsetA[i] = new double[m];
         subsetA[i][k - n] = -1.0;
