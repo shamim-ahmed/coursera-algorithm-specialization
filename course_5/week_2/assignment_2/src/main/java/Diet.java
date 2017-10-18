@@ -128,7 +128,7 @@ public class Diet {
   }
 
   private boolean validateSolution(double[] solution, double[][] tempA, double[] tempB) {
-    boolean result = false;
+    boolean result = true;
 
     for (int i = 0; i < tempA.length; i++) {
       double val = multiply(tempA[i], solution);
