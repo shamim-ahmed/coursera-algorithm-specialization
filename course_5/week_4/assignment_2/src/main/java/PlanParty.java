@@ -42,22 +42,48 @@ class PlanParty {
   }
 
   static void dfs(Vertex[] tree, int vertex, int parent) {
-    for (int child : tree[vertex].children)
-      if (child != parent)
+    for (int child : tree[vertex].children) {
+      if (child != parent) {
         dfs(tree, child, vertex);
+      }
+    }
 
-    // This is a template function for processing a tree using depth-first search.
-    // Write your code here.
-    // You may need to add more parameters to this function for child processing.
+    int funFactorSum1 = tree[vertex].weight;
+    int funFactorSum2 = 0;
+
+    for (int child : tree[vertex].children) {
+      if (child != parent) {
+        funFactorSum2 += tree[child].weight;
+
+        for (int grandChild : tree[child].children) {
+          if (grandChild != child && grandChild != parent && grandChild != vertex) {
+            funFactorSum1 += tree[grandChild].weight;
+          }
+        }
+      }
+    }
+
+    tree[vertex].weight = Math.max(funFactorSum1, funFactorSum2);
   }
 
   static int MaxWeightIndependentTreeSubset(Vertex[] tree) {
     int size = tree.length;
-    if (size == 0)
+
+    if (size == 0) {
       return 0;
+    }
+
     dfs(tree, 0, -1);
-    // You must decide what to return.
-    return 0;
+
+    int maxValue = Integer.MIN_VALUE;
+
+    for (Vertex v : tree) {
+      if (v.weight > maxValue) {
+        maxValue = v.weight;
+      }
+    }
+
+    return maxValue;
   }
 
   public static void main(String[] args) throws IOException {
