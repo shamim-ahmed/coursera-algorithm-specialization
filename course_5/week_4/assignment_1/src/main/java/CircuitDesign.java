@@ -1,6 +1,10 @@
 import java.io.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 public class CircuitDesign {
@@ -27,6 +31,7 @@ public class CircuitDesign {
   class TwoSatisfiability {
     int numVars;
     Clause[] clauses;
+    List<Set<Integer>> sccList = new ArrayList<>();
 
     TwoSatisfiability(int n, int m) {
       numVars = n;
@@ -36,36 +41,120 @@ public class CircuitDesign {
       }
     }
 
-    boolean isSatisfiable(int[] result) {
-      // This solution tries all possible 2^n variable assignments.
-      // It is too slow to pass the problem.
-      // Implement a more efficient algorithm here.
-      for (int mask = 0; mask < (1 << numVars); ++mask) {
-        for (int i = 0; i < numVars; ++i) {
-          result[i] = (mask >> i) & 1;
-        }
+    void initialize() {
+      @SuppressWarnings("unchecked")
+      List<Integer>[] adj = (List<Integer>[]) new ArrayList[2 * numVars];
+      @SuppressWarnings("unchecked")
+      List<Integer>[] adjReverse = (List<Integer>[]) new ArrayList[2 * numVars];
 
-        boolean formulaIsSatisfied = true;
+      constructimplicationGraph(adj, adjReverse);
 
-        for (Clause clause : clauses) {
-          boolean clauseIsSatisfied = false;
-          if ((result[Math.abs(clause.firstVar) - 1] == 1) == (clause.firstVar < 0)) {
-            clauseIsSatisfied = true;
-          }
-          if ((result[Math.abs(clause.secondVar) - 1] == 1) == (clause.secondVar < 0)) {
-            clauseIsSatisfied = true;
-          }
-          if (!clauseIsSatisfied) {
-            formulaIsSatisfied = false;
-            break;
-          }
-        }
+      List<Integer> orderList = new ArrayList<>();
+      boolean[] visitedFlags = new boolean[2 * numVars];
+      depthFirstSearchWithOrder(adjReverse, visitedFlags, 0, orderList);
 
-        if (formulaIsSatisfied) {
-          return true;
+      Collections.reverse(orderList);
+
+      visitedFlags = new boolean[2 * numVars];
+
+      for (int order : orderList) {
+        if (!visitedFlags[order]) {
+          Set<Integer> scc = new HashSet<>();
+          depthFirstSearchWithStronglyConnectedComponent(adj, visitedFlags, order, scc);
+          sccList.add(scc);
         }
       }
-      return false;
+    }
+
+    void constructimplicationGraph(List<Integer>[] adj, List<Integer>[] adjReverse) {
+      for (Clause clause : clauses) {
+        int x, compX, y, compY;
+
+        if (clause.firstVar > 0) {
+          x = clause.firstVar - 1;
+          compX = x + numVars;
+        } else {
+          x = -clause.firstVar - 1 + numVars;
+          compX = x - numVars;
+        }
+
+        if (clause.secondVar > 0) {
+          y = clause.secondVar - 1;
+          compY = y + numVars;
+        } else {
+          y = -clause.secondVar - 1 + numVars;
+          compY = y - numVars;
+        }
+
+        adj[compX].add(y);
+        adj[compY].add(x);
+        adjReverse[y].add(compX);
+        adjReverse[x].add(compY);
+      }
+    }
+
+    void depthFirstSearchWithOrder(List<Integer>[] adjArray, boolean[] visitedFlags, int u,
+        List<Integer> orderList) {
+      visitedFlags[u] = true;
+
+      for (int v : adjArray[u]) {
+        if (!visitedFlags[v]) {
+          depthFirstSearchWithOrder(adjArray, visitedFlags, v, orderList);
+        }
+      }
+
+      orderList.add(u);
+    }
+
+    void depthFirstSearchWithStronglyConnectedComponent(List<Integer>[] adjArray,
+        boolean[] visitedFlags, int u, Set<Integer> scc) {
+      scc.add(u);
+
+      for (int v : adjArray[u]) {
+        if (!visitedFlags[v]) {
+          visitedFlags[v] = true;
+          depthFirstSearchWithStronglyConnectedComponent(adjArray, visitedFlags, v, scc);
+        }
+      }
+    }
+
+    boolean isSatisfiable(int[] result) {
+      for (Set<Integer> scc : sccList) {
+        for (int x : scc) {
+          if (scc.contains(x + numVars) || scc.contains(x - numVars)) {
+            return false;
+          }
+        }
+      }
+
+      for (int i = 0; i < result.length; i++) {
+        result[i] = -1;
+      }
+
+      for (Set<Integer> scc : sccList) {
+        for (int i : scc) {
+          int x;
+          boolean complemented;
+
+          if (i >= numVars) {
+            x = i - numVars;
+            complemented = true;
+          } else {
+            x = i;
+            complemented = false;
+          }
+
+          if (result[x] == -1) {
+            if (complemented) {
+              result[x] = 1;
+            } else {
+              result[x] = 0;
+            }
+          }
+        }
+      }
+
+      return true;
     }
   }
 
@@ -74,20 +163,25 @@ public class CircuitDesign {
     int m = reader.nextInt();
 
     TwoSatisfiability twoSat = new TwoSatisfiability(n, m);
+
     for (int i = 0; i < m; ++i) {
       twoSat.clauses[i].firstVar = reader.nextInt();
       twoSat.clauses[i].secondVar = reader.nextInt();
     }
 
+    twoSat.initialize();
     int result[] = new int[n];
+
     if (twoSat.isSatisfiable(result)) {
       writer.printf("SATISFIABLE\n");
+
       for (int i = 1; i <= n; ++i) {
         if (result[i - 1] == 1) {
           writer.printf("%d", -i);
         } else {
           writer.printf("%d", i);
         }
+
         if (i < n) {
           writer.printf(" ");
         } else {
