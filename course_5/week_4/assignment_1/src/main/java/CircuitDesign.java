@@ -51,7 +51,14 @@ public class CircuitDesign {
 
       List<Integer> orderList = new ArrayList<>();
       boolean[] visitedFlags = new boolean[2 * numVars];
-      depthFirstSearchWithOrder(adjReverse, visitedFlags, 0, orderList);
+      
+      for (int i = 0; i < 2 * numVars; i++) {
+        if (!visitedFlags[i]) {
+          visitedFlags[i] = true;
+          depthFirstSearchWithOrder(adjReverse, visitedFlags, i, orderList);
+          orderList.add(i);
+        }
+      }
 
       Collections.reverse(orderList);
 
@@ -59,6 +66,7 @@ public class CircuitDesign {
 
       for (int order : orderList) {
         if (!visitedFlags[order]) {
+          visitedFlags[order] = true;
           Set<Integer> scc = new HashSet<>();
           depthFirstSearchWithStronglyConnectedComponent(adj, visitedFlags, order, scc);
           sccList.add(scc);
@@ -67,6 +75,14 @@ public class CircuitDesign {
     }
 
     void constructimplicationGraph(List<Integer>[] adj, List<Integer>[] adjReverse) {
+      for (int i = 0; i < adj.length; i++) {
+        adj[i] = new ArrayList<>();
+      }
+      
+      for (int i = 0; i < adjReverse.length; i++) {
+        adjReverse[i] = new ArrayList<>();
+      }
+      
       for (Clause clause : clauses) {
         int x, compX, y, compY;
 
@@ -95,15 +111,14 @@ public class CircuitDesign {
 
     void depthFirstSearchWithOrder(List<Integer>[] adjArray, boolean[] visitedFlags, int u,
         List<Integer> orderList) {
-      visitedFlags[u] = true;
 
       for (int v : adjArray[u]) {
         if (!visitedFlags[v]) {
+          visitedFlags[v] = true;
           depthFirstSearchWithOrder(adjArray, visitedFlags, v, orderList);
+          orderList.add(v);
         }
       }
-
-      orderList.add(u);
     }
 
     void depthFirstSearchWithStronglyConnectedComponent(List<Integer>[] adjArray,
