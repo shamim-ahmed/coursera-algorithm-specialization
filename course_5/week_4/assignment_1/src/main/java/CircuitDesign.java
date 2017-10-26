@@ -36,6 +36,7 @@ public class CircuitDesign {
     TwoSatisfiability(int n, int m) {
       numVars = n;
       clauses = new Clause[m];
+      
       for (int i = 0; i < m; ++i) {
         clauses[i] = new Clause();
       }
@@ -51,7 +52,7 @@ public class CircuitDesign {
 
       List<Integer> orderList = new ArrayList<>();
       boolean[] visitedFlags = new boolean[2 * numVars];
-      
+
       for (int i = 0; i < 2 * numVars; i++) {
         if (!visitedFlags[i]) {
           visitedFlags[i] = true;
@@ -61,7 +62,6 @@ public class CircuitDesign {
       }
 
       Collections.reverse(orderList);
-
       visitedFlags = new boolean[2 * numVars];
 
       for (int order : orderList) {
@@ -78,11 +78,11 @@ public class CircuitDesign {
       for (int i = 0; i < adj.length; i++) {
         adj[i] = new ArrayList<>();
       }
-      
+
       for (int i = 0; i < adjReverse.length; i++) {
         adjReverse[i] = new ArrayList<>();
       }
-      
+
       for (Clause clause : clauses) {
         int x, compX, y, compY;
 
