@@ -17,10 +17,14 @@ public class CircuitDesign {
   }
 
   public static void main(String[] args) {
-    InputReader reader = new InputReader(System.in);
-    OutputWriter writer = new OutputWriter(System.out);
-    new CircuitDesign(reader, writer).run();
-    writer.writer.flush();
+    new Thread(null, new Runnable() {
+      public void run() {
+        InputReader reader = new InputReader(System.in);
+        OutputWriter writer = new OutputWriter(System.out);
+        new CircuitDesign(reader, writer).run();
+        writer.writer.flush();
+      }
+    }, "circuitDesign", 1L << 31).start();;
   }
 
   class Clause {
@@ -36,7 +40,7 @@ public class CircuitDesign {
     TwoSatisfiability(int n, int m) {
       numVars = n;
       clauses = new Clause[m];
-      
+
       for (int i = 0; i < m; ++i) {
         clauses[i] = new Clause();
       }
